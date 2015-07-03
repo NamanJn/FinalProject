@@ -5,11 +5,9 @@ import pdb
 
 ee = execfile
 
-
-counter = 0
 cap = cv2.VideoCapture("cut.mp4")
 ret, frame = cap.read()
-#frame = frame[100:225,50:550]
+frame = frame[100:225,50:550]
 
 
 gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
@@ -22,7 +20,7 @@ binary = gray.copy()
 while True:
 
 	ret, frame = cap.read()
-        #frame = frame[100:225,50:550]
+        frame = frame[100:225,50:550]
 	cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY,dst=gray)
         #roi = frame.copy()[100:250,50:550]
         #pdb.set_trace()
