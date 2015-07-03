@@ -1,4 +1,3 @@
-
 import inspect 
 import cv2
 import pdb
@@ -29,39 +28,44 @@ while True:
 	#gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
         gray_float = gray.astype("float32") 
 
-        cv2.accumulateWeighted(src=gray_float,dst=accumulator,alpha=0.01)
+        cv2.accumulateWeighted(src=gray_float,dst=accumulator,alpha=0.001)
         accumulator_int = accumulator.astype("uint8")
         
         # finding diff between running average and current
         cv2.absdiff(src1=accumulator_int, src2=gray,dst=diff)
         
+	cv2.imshow("diff", diff)
         # doing adaptive threshold
-        cv2.adaptiveThreshold(src=diff,maxValue=255,
-               adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-               thresholdType=cv2.THRESH_BINARY,
-               blockSize = 11,
-               C = 3,
-               dst = binary)
+        #cv2.adaptiveThreshold(src=diff,maxValue=255,
+        #       adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        #       thresholdType=cv2.THRESH_BINARY_INV,
+        #       blockSize = 91,
+        #       C = 10,
+        #       dst = binary)
 
-        ##cv2.threshold(src=diff,thresh=20,
-        #        maxval=255,
-        #        type=cv2.THRESH_BINARY,
-        #        dst=binary)
+        cv2.threshold(src=diff,thresh=25,
+                maxval=255,
+                type=cv2.THRESH_BINARY,
+                dst=binary)
 
         # finding the contours 
         contour = binary.copy()
+	cv2.imshow("binary", binary)
         contourL, hierarchy = cv2.findContours(image=contour,
-                    mode=cv2.RETR_TREE,
+                    #mode=cv2.RETR_TREE,
+                    mode=cv2.RETR_EXTERNAL,
                     method=cv2.CHAIN_APPROX_SIMPLE)
+	cv2.imshow("contour", contour)
 
         #drawcontour = binary.copy() 
         bigcontours = [i for i in contourL if cv2.contourArea(i)>150]
         try:
             cv2.drawContours(frame, bigcontours,-1,(255,255,0),1)
+            #cv2.drawContours(frame, contourL,-1,(255,255,0),1)
         except:
             pass
 	#cv2.imshow("img",accumulator_int)
-	cv2.imshow("img", contour)
+	cv2.imshow("img", frame)
 
         if counter == 500:
             pdb.set_trace()
