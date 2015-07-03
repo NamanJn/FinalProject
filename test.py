@@ -39,14 +39,15 @@ while True:
         #cv2.adaptiveThreshold(src=diff,maxValue=255,
         #       adaptiveMethod=cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         #       thresholdType=cv2.THRESH_BINARY_INV,
-        #       blockSize = 91,
-        #       C = 10,
+        #       blockSize = 201,
+        #       C = 0,
         #       dst = binary)
-
+        
         cv2.threshold(src=diff,thresh=25,
                 maxval=255,
                 type=cv2.THRESH_BINARY,
                 dst=binary)
+
 
         # finding the contours 
         contour = binary.copy()
@@ -58,20 +59,12 @@ while True:
 	cv2.imshow("contour", contour)
 
         #drawcontour = binary.copy() 
-        bigcontours = [i for i in contourL if cv2.contourArea(i)>150]
-        try:
-            cv2.drawContours(frame, bigcontours,-1,(255,255,0),1)
-            #cv2.drawContours(frame, contourL,-1,(255,255,0),1)
-        except:
-            pass
-	#cv2.imshow("img",accumulator_int)
+        bigcontours = [i for i in contourL if cv2.contourArea(i)>75]
+        cv2.drawContours(frame, bigcontours,-1,(255,255,0),1)
+
+
 	cv2.imshow("img", frame)
 
-        if counter == 500:
-            pdb.set_trace()
-            cv2.findContours(image=binary,
-                    mode=cv2.RETR_TREE,
-                    method=cv2.CHAIN_APPROX_SIMPLE)
 	cv2.waitKey(10)
 	print counter 
 	counter +=1
