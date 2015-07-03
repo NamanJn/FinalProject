@@ -57,11 +57,11 @@ while True:
         #drawcontour = binary.copy() 
         bigcontours = [i for i in contourL if cv2.contourArea(i)>150]
         try:
-            cv2.drawContours(frame, bigcontours,-1,(255,255,0),2)
+            cv2.drawContours(frame, bigcontours,-1,(255,255,0),1)
         except:
             pass
 	#cv2.imshow("img",accumulator_int)
-	cv2.imshow("img", binary)
+	cv2.imshow("img", contour)
 
         if counter == 500:
             pdb.set_trace()
