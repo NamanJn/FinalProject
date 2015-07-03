@@ -6,9 +6,12 @@ import pdb
 ee = execfile
 
 
+counter = 0
 cap = cv2.VideoCapture("cut.mp4")
 ret, frame = cap.read()
-counter = 0
+frame = frame[100:225,50:550]
+
+
 gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
 gray_float  = gray.astype("float32")
 accumulator = gray.astype("float32")
@@ -19,8 +22,10 @@ binary = gray.copy()
 while True:
 
 	ret, frame = cap.read()
+        frame = frame[100:225,50:550]
 	cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY,dst=gray)
-        pdb.set_trace()
+        #roi = frame.copy()[100:250,50:550]
+        #pdb.set_trace()
 	#gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
         gray_float = gray.astype("float32") 
 
@@ -42,7 +47,6 @@ while True:
         #        type=cv2.THRESH_BINARY,
         #        dst=binary)
 
-
         # finding the contours 
         contour = binary.copy()
         contourL, hierarchy = cv2.findContours(image=contour,
@@ -50,10 +54,10 @@ while True:
                     method=cv2.CHAIN_APPROX_SIMPLE)
 
         #drawcontour = binary.copy() 
-        cv2.drawContours(frame, contourL,0,(0,255,0),3)
+        cv2.drawContours(contour, contourL,0,(255,255,0),3)
 
 	#cv2.imshow("img",accumulator_int)
-	cv2.imshow("img",contour)
+	cv2.imshow("img",accumulator_int)
 
         if counter == 500:
             pdb.set_trace()
