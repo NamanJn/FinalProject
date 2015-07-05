@@ -24,6 +24,7 @@ accumulator_int = gray.copy()
 diff = gray.copy()
 binary = gray.copy()
 #pdb.set_trace()
+previousContour = ["test"]
 while True:
 
 	ret, frame = cap.read()
@@ -68,8 +69,16 @@ while True:
 
         # getting big contours  
         bigcontours = [i for i in contourL if cv2.contourArea(i)>50]
-        
+
+        #pdb.set_trace()
+        # This block is to prevent the losing of the contour
+        if len(bigcontours) == 1:
+            previousContour = bigcontours[:]
+        elif len(bigcontours) == 0 and previousContour != ["test"]:
+            bigcontours = previousContour[:]
+
         # printing out the position of the fly
+        # getting the moment (to find the center) 
         positions = []
         for i in bigcontours:
             M = cv2.moments(i)
