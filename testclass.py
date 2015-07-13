@@ -27,6 +27,8 @@ while True:
         frame = frame[tube_y:tube_y+tube_height,tube_x:tube_x+tube_length]
 
         positions = tracker.apply(frame)
-        
+
 	print counter 
 	counter +=1
+
+

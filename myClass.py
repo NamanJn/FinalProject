@@ -1,11 +1,13 @@
 import inspect 
 import cv2
 import pdb
-
+import numpy as np 
+import operator
 ee = execfile
 
 class Tracker(object):
     def __init__(self,frame):
+        self.frame = frame
         self.gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
         self.gray_float = self.gray.astype("float32") 
         self.accumulator = self.gray.astype("float32")
@@ -13,12 +15,19 @@ class Tracker(object):
         self.diff = self.gray.copy() 
         self.binary = self.gray.copy()
         self.previousContour = ["test"]
+        self.counter = 0
+
+    def getMeanOfContour(contour):
+        pass
 
     def apply(self,frame):
         """
         returns moments (center) of contours
         """
-	    cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY,dst=self.gray)
+        self.frame = frame
+        if self.counter %100 == 0: pdb.set_trace()
+
+	cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY,dst=self.gray)
         gray_float = self.gray.astype("float32") 
 
         cv2.accumulateWeighted(src=gray_float,dst=self.accumulator,alpha=0.001)
@@ -47,15 +56,36 @@ class Tracker(object):
         # getting big contours  
         bigcontours = [i for i in contourL if cv2.contourArea(i)>50]
 
-        #pdb.set_trace()
         # This block is to prevent the losing of the contour
+        self.counter +=1
+        print self.counter
+
         if len(bigcontours) == 1:
             self.previousContour = bigcontours[:]
         elif len(bigcontours) == 0 and self.previousContour != ["test"]:
             bigcontours = self.previousContour[:]
 
+        if self.counter> 100:
+            
+            # getting the most squarish looking contour
+            squarishcontourL = self.getSquarishContour(bigcontours,draw=True)
+
+            masked = np.zeros(self.gray.shape,np.uint8)     
+            cv2.drawContours(masked,bigcontours,-1,(255,255,0),-1)
+            pixelpoints = np.transpose(np.nonzero(masked))
+            mean_val = cv2.mean(self.gray,mask = masked)
+            print "mean_value,",mean_val
+
+            cv2.imshow("mask",masked) 
+
+
+            frame_with_square_contour= frame.copy()
+            cv2.drawContours(frame_with_square_contour, squarishcontourL,-1,(255,255,0),1)
+	    cv2.imshow("2nd filter step - squarish", frame_with_square_contour)
+
         # printing out the position of the fly
         # getting the moment (to find the center) 
+
         positions = []
         for i in bigcontours:
             M = cv2.moments(i)
@@ -66,7 +96,27 @@ class Tracker(object):
 
         cv2.drawContours(frame, bigcontours,-1,(255,255,0),1)
 
+
 	cv2.imshow("img", frame)
 
+
 	cv2.waitKey(10)
+
         return positions 
+
+    def getSquarishContour(self,contourL,draw=False):
+
+        aspect_ratios = []
+        contourL = [ i for i in contourL ] # making a deep copy?
+        if draw:
+            frameCopy = self.frame.copy()
+        for cnt in contourL:
+            x,y,w,h = cv2.boundingRect(cnt)
+            if draw:
+                cv2.rectangle(frameCopy,(x,y),(x+w,y+h),(0,255,0),1)
+            aspect_ratios.append(abs(float(w)/h -1))
+
+        cv2.imshow("squares",frameCopy)
+        min_index, min_value = min(enumerate(aspect_ratios), key=operator.itemgetter(1))
+        squarishcontourL = [contourL.pop(min_index)]
+        return squarishcontourL 
