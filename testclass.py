@@ -9,7 +9,7 @@ ee = execfile
 counter = 0
 
 # you need to specify this number 
-tube_number = 9
+tube_number = 1
 
 # tube 9, 
 # 1. fly sleeps for time.
@@ -24,10 +24,10 @@ tube_x = 50
 cap = cv2.VideoCapture("cut.mp4")
 
 # initialising the tracker class
-ret, frame = cap.read()
-frame = frame[tube_y:tube_y+tube_height,tube_x:tube_x+tube_length]
 
-tracker = Tracker(frame)
+ret, frame = cap.read()
+frameROI = frame[tube_y:tube_y+tube_height,tube_x:tube_x+tube_length]
+tracker = Tracker(frameROI)
 
 while True:
 

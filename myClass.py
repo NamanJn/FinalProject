@@ -12,6 +12,7 @@ class Tracker(object):
         self.gray_float = self.gray.astype("float32") 
         self.accumulator = self.gray.astype("float32")
         self.accumulator_int = self.gray.copy()
+        self.binary_without_running_average = self.gray.copy()
         self.diff = self.gray.copy() 
         self.binary = self.gray.copy()
         self.previousContour = ["test"]
@@ -27,8 +28,17 @@ class Tracker(object):
         self.frame = frame.copy()
 
 	cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY,dst=self.gray)
+	cv2.imshow("gray", self.gray)
         gray_float = self.gray.astype("float32") 
 
+        # drawing the binary threshold image
+        cv2.threshold(src=self.gray,
+                thresh=80,
+                maxval=255,
+                type=cv2.THRESH_BINARY_INV,
+                dst=self.binary_without_running_average)
+         
+	cv2.imshow("threshold without runing average ", self.binary_without_running_average )
         cv2.accumulateWeighted(src=gray_float,dst=self.accumulator,alpha=0.001)
         accumulator_int = self.accumulator.astype("uint8")
 
