@@ -6,7 +6,7 @@ import operator
 ee = execfile
 
 class Tracker(object):
-    def __init__(self,frame,num_of_flies=1):
+    def __init__(self, frame, num_of_flies=1):
         self.frame = frame
         self.gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
         self.gray_float = self.gray.astype("float32") 
@@ -17,7 +17,7 @@ class Tracker(object):
         self.binary = self.gray.copy()
         self.previousContour = ["test"]
         self.counter = 0
-        self.num_of_flies=num_of_flies
+        self.num_of_flies = num_of_flies
 
     def getMeanOfContour(contour):
         pass
@@ -29,31 +29,34 @@ class Tracker(object):
         self.frame = frame.copy()
 
 	cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY,dst=self.gray)
-	cv2.imshow("gray", self.gray)
+	#cv2.imshow("gray", self.gray)
         gray_float = self.gray.astype("float32") 
 
-        # drawing the binary threshold image
+        # drawing the binary threshold image without running average
         cv2.threshold(src=self.gray,
                 thresh=80,
                 maxval=255,
                 type=cv2.THRESH_BINARY_INV,
                 dst=self.binary_without_running_average)
          
-	cv2.imshow("threshold without runing average ", self.binary_without_running_average )
+	#cv2.imshow("threshold without runing average ", self.binary_without_running_average )
+
+        # getting the acummulator average
         cv2.accumulateWeighted(src=gray_float,dst=self.accumulator,alpha=0.001)
         accumulator_int = self.accumulator.astype("uint8")
 
+        #getting the diffs
         cv2.subtract(src1=accumulator_int, src2=self.gray, dst = self.diff)
-	cv2.imshow("diff", self.diff)
+	#cv2.imshow("diff", self.diff)
 
 
-        # drawing the binary threshold image
-        cv2.threshold(src=self.diff,thresh=20,
+        # drawing the binary threshold image with running average
+        cv2.threshold(src=self.diff,thresh=30,
                 maxval=255,
                 type=cv2.THRESH_BINARY,
                 dst=self.binary)
         contour = self.binary.copy()
-	cv2.imshow("binary", self.binary)
+	#cv2.imshow("binary", self.binary)
 
 
         # finding the contours 
@@ -68,30 +71,31 @@ class Tracker(object):
         # drawing all contours 
         allContourFrame = self.frame.copy()
         cv2.drawContours(allContourFrame,contourL,-1,(255,255,0),-1)
-        cv2.imshow("no filtering - all contours shown", allContourFrame)
+        #cv2.imshow("no filtering - all contours shown", allContourFrame)
 
         # getting big contours  
-        bigcontours = [i for i in contourL if cv2.contourArea(i)>50]
-
+        bigcontours = [i for i in contourL if cv2.contourArea(i)>30]
+        
         # This block is to prevent the losing of the contour
-        self.counter +=1
+        self.counter += 1
         print self.counter
         if len(bigcontours) == 1:
             self.previousContour = bigcontours[:]
+
         elif len(bigcontours) == 0 and self.previousContour != ["test"]:
             bigcontours = self.previousContour[:]
 
         # drawing the big contours
         bigContourFrame = frame.copy() 
         cv2.drawContours(bigContourFrame, bigcontours,-1,(255,255,0),1)
-	cv2.imshow("1st filter step - big contours", bigContourFrame)
+	#cv2.imshow("1st filter step - big contours", bigContourFrame)
 
         # getting most squarish looking contour
         # no need for this step if there is only 1 contour.
         # unccoment line below if you want to have the length of the big 
         #if self.counter> 100 and len(bigcontours) > 1:
 
-        if self.counter> 1000:
+        if self.counter > 1000:
 
             squarishcontourL = self.getSquarishContour(bigcontours,draw=True)
 
@@ -99,13 +103,13 @@ class Tracker(object):
             cv2.drawContours(masked,bigcontours,-1,(255,255,0),-1)
             pixelpoints = np.transpose(np.nonzero(masked))
             mean_val = cv2.mean(self.gray,mask = masked)
-            print "mean_value,",mean_val
+            print "mean_value,", mean_val
 
-            cv2.imshow("mask",masked) 
+            #cv2.imshow("mask", masked) 
 
             frame_with_square_contour= self.frame.copy()
             cv2.drawContours(frame_with_square_contour, squarishcontourL,-1,(255,255,0),1)
-	    cv2.imshow("2nd filter step - squarish", frame_with_square_contour)
+	    #cv2.imshow("2nd filter step - squarish", frame_with_square_contour)
 
         # printing out the position of the fly
         # getting the moment (to find the center) 
@@ -118,14 +122,22 @@ class Tracker(object):
             positions.append([cx,cy])   
         print positions
 
-
-
-	cv2.waitKey(10)
+	#cv2.waitKey(10)
 
         if self.counter %500 == 0 and self.counter> 1: pdb.set_trace()
+        if len(bigcontours) == 1:
+            pdb.set_trace()
+
+        imagesToShowL =[
+               self.gray,
+               self.diff,
+               self.binary,
+               bigContourFrame
+                ]
+        self.stitchAndShowAllImages
         return positions 
 
-    def getSquarishContour(self,contourL,draw=False):
+    def getSquarishContour(self, contourL, draw=False):
 
         aspect_ratios = []
         contourL = [ i for i in contourL ] # making a deep copy?
@@ -138,7 +150,27 @@ class Tracker(object):
             aspect_ratios.append(abs(float(w)/h -1))
 
         if draw:
-            cv2.imshow("squares",frameCopy)
+            cv2.imshow("squares", frameCopy)
         min_index, min_value = min(enumerate(aspect_ratios), key=operator.itemgetter(1))
         squarishcontourL = [contourL.pop(min_index)]
         return squarishcontourL 
+
+    def stitchAndShowAllImages(self,frameL):
+
+        if len(frameL[0].shape) == 2:
+            stitched = cv2.cvtColor( frameL[0], code = cv2.COLOR_GRAY2BGR )
+        elif len(frameL[0].shape) == 3:
+            stitched = frameL[0].copy()
+        else: 
+            print "The images are messed up"
+
+        rest_of_frames = frameL[1:]
+
+        for frame in rest_of_frames:
+
+            converted = frame 
+            if len(frame.shape) == 2:
+                converted = cv2.cvtColor(frame, code = cv2.COLOR_GRAY2BGR )
+            np.vstack((stitched, converted))
+        cv2.imshow("stitched", stitched)
+        cv2.waitKey(1)

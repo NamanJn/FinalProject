@@ -9,15 +9,15 @@ ee = execfile
 counter = 0
 
 # you need to specify this number 
-tube_number = 1
+tube_number = 3
 
 # tube 9, 
 # 1. fly sleeps for time.
 # 2. Fly contour gets split into half because the torso is below threshold 
 
-tube_height = 64
+tube_height = 50
 tube_length = 550
-tube_y = 160 + 65*(tube_number-1)
+tube_y = 170 + 65*(tube_number-1)
 tube_x = 50
 
 # reading the video
@@ -32,6 +32,8 @@ tracker = Tracker(frameROI)
 while True:
 
 	ret, frame = cap.read()
+        cv2.imshow("all", frame)
+        cv2.waitKey(1)
         frameROI = frame[tube_y:tube_y+tube_height,tube_x:tube_x+tube_length]
 
         positions = tracker.apply(frameROI)

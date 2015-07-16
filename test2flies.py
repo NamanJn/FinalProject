@@ -9,15 +9,15 @@ ee = execfile
 counter = 0
 
 # you need to specify this number 
-tube_number = 1
+tube_number = 2
 
 # tube 9, 
 # 1. fly sleeps for time.
 # 2. Fly contour gets split into half because the torso is below threshold 
 
-tube_height = 30
+tube_height = 28
 tube_length = 550
-tube_y = 135+ 65*(tube_number-1)
+tube_y = 135+ 42*(tube_number-1)
 tube_x = 50
 
 # reading the video
