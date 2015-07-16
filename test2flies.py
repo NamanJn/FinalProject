@@ -9,16 +9,16 @@ ee = execfile
 counter = 0
 
 # you need to specify this number 
-tube_number = 2
+tube_number = 1
 
 # tube 9, 
 # 1. fly sleeps for time.
 # 2. Fly contour gets split into half because the torso is below threshold 
 
 tube_height = 26
-tube_length = 550
+tube_length = 500
 tube_y = 135+ 42*(tube_number-1)
-tube_x = 50
+tube_x = 70
 
 # reading the video
 cap = cv2.VideoCapture("2flies.mp4")

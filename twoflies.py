@@ -18,7 +18,7 @@ class Tracker(object):
         self.previousContour = ["test"]
         self.counter = 0
         self.num_of_flies = num_of_flies
-
+        self.positionsD = {}
     def getMeanOfContour(contour):
         pass
 
@@ -118,9 +118,36 @@ class Tracker(object):
             M = cv2.moments(i)
             cx = int(M['m10']/M['m00'])
             cy = int(M['m01']/M['m00'])
-            positions.append([cx,cy])   
-        print positions
 
+            positions.append([cx,cy])   
+         
+        # labelling the id of the flies
+        if self.positionsD == {} and len(positions) == 2:
+            for index,item in enumerate(positions):
+                self.positionsD[index+1] = item
+        
+        if len(positions) == 2:
+            positions_proper = {}
+            for fly_id in self.positionsD: 
+                fly_coordinate = self.positionsD[fly_id]
+                distances = [ sum((np.array(fly_coordinate) - np.array(i))**2) for i in positions ]
+                min_index = distances.index(min(distances))
+                positions_proper[fly_id] = positions[min_index]
+            
+            #print distances 
+            for fly_id,fly_coordinate in positions_proper.iteritems():        
+                cv2.putText(bigContourFrame,
+                        str(fly_id),
+                        (fly_coordinate[0],18),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.75,
+                        (255,255,255))
+            print positions_proper
+            self.positionsD = positions_proper
+        else:
+            self.positionsD = {}
+
+        print positions
         # Images to show
         imagesToShowL = [
                self.gray,
@@ -129,15 +156,16 @@ class Tracker(object):
                allContourFrame,
                bigContourFrame
                 ]
-
         stitched = self.stitchImages(imagesToShowL)
 
         cv2.imshow("stitched", stitched)
-        if cv2.waitKey(5) == ord('a'):
+        if cv2.waitKey(7) == ord('a'):
             pdb.set_trace()
 
-        if self.counter %500 == 0 and self.counter> 1: pdb.set_trace()
+        if self.counter % 300 == 0 and self.counter> 1: pdb.set_trace()
         if len(bigcontours) == 0 and self.counter > 300: pdb.set_trace()
+
+
 
         return positions 
 
@@ -177,5 +205,9 @@ class Tracker(object):
                 converted = cv2.cvtColor(frame, code = cv2.COLOR_GRAY2BGR )
             stitched = np.vstack((stitched, converted))
 
-        return stitched
+        stitched_double = cv2.resize(stitched, dsize=None,
+                fx=2,
+                fy=2,
+                interpolation = cv2.INTER_CUBIC)
+        return stitched_double
 
