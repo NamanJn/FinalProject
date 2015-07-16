@@ -15,7 +15,7 @@ tube_number = 2
 # 1. fly sleeps for time.
 # 2. Fly contour gets split into half because the torso is below threshold 
 
-tube_height = 28
+tube_height = 26
 tube_length = 550
 tube_y = 135+ 42*(tube_number-1)
 tube_x = 50
@@ -35,12 +35,6 @@ while True:
 
 	counter +=1
 	print counter 
-
-        if counter < 800: continue
-
-        cv2.imshow("all",frame)
-        cv2.waitKey(1)
-
 
         frameROI = frame[tube_y:tube_y+tube_height,tube_x:tube_x+tube_length]
 

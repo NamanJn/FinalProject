@@ -26,6 +26,8 @@ class Tracker(object):
         """
         returns moments (center) of contours
         """
+        self.counter += 1
+        print self.counter
         self.frame = frame.copy()
 
 	cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY,dst=self.gray)
@@ -77,34 +79,32 @@ class Tracker(object):
         bigcontours = [i for i in contourL if cv2.contourArea(i)>30]
         
         # This block is to prevent the losing of the contour
-        self.counter += 1
-        print self.counter
-        if len(bigcontours) == 1:
-            self.previousContour = bigcontours[:]
+        # need to redo this
 
-        elif len(bigcontours) == 0 and self.previousContour != ["test"]:
-            bigcontours = self.previousContour[:]
+        #if len(bigcontours) == 2:
+        #    self.previousContour = bigcontours[:]
+        #elif len(bigcontours) == 1 and self.previousContour != ["test"]:
+        #    bigcontours = self.previousContour[:]
 
         # drawing the big contours
         bigContourFrame = frame.copy() 
         cv2.drawContours(bigContourFrame, bigcontours,-1,(255,255,0),1)
 	#cv2.imshow("1st filter step - big contours", bigContourFrame)
 
+
         # getting most squarish looking contour
         # no need for this step if there is only 1 contour.
         # unccoment line below if you want to have the length of the big 
         #if self.counter> 100 and len(bigcontours) > 1:
-
         if self.counter > 1000:
 
-            squarishcontourL = self.getSquarishContour(bigcontours,draw=True)
+            squarishcontourL = self.getSquarishContour(bigcontours,draw=False)
 
             masked = np.zeros(self.gray.shape,np.uint8)     
             cv2.drawContours(masked,bigcontours,-1,(255,255,0),-1)
             pixelpoints = np.transpose(np.nonzero(masked))
             mean_val = cv2.mean(self.gray,mask = masked)
             print "mean_value,", mean_val
-
             #cv2.imshow("mask", masked) 
 
             frame_with_square_contour= self.frame.copy()
@@ -113,7 +113,6 @@ class Tracker(object):
 
         # printing out the position of the fly
         # getting the moment (to find the center) 
-
         positions = []
         for i in bigcontours:
             M = cv2.moments(i)
@@ -122,19 +121,24 @@ class Tracker(object):
             positions.append([cx,cy])   
         print positions
 
-	#cv2.waitKey(10)
-
-        if self.counter %500 == 0 and self.counter> 1: pdb.set_trace()
-        if len(bigcontours) == 1:
-            pdb.set_trace()
-
-        imagesToShowL =[
+        # Images to show
+        imagesToShowL = [
                self.gray,
                self.diff,
                self.binary,
+               allContourFrame,
                bigContourFrame
                 ]
-        self.stitchAndShowAllImages
+
+        stitched = self.stitchImages(imagesToShowL)
+
+        cv2.imshow("stitched", stitched)
+        if cv2.waitKey(5) == ord('a'):
+            pdb.set_trace()
+
+        if self.counter %500 == 0 and self.counter> 1: pdb.set_trace()
+        if len(bigcontours) == 0 and self.counter > 300: pdb.set_trace()
+
         return positions 
 
     def getSquarishContour(self, contourL, draw=False):
@@ -155,7 +159,7 @@ class Tracker(object):
         squarishcontourL = [contourL.pop(min_index)]
         return squarishcontourL 
 
-    def stitchAndShowAllImages(self,frameL):
+    def stitchImages(self,frameL):
 
         if len(frameL[0].shape) == 2:
             stitched = cv2.cvtColor( frameL[0], code = cv2.COLOR_GRAY2BGR )
@@ -171,6 +175,7 @@ class Tracker(object):
             converted = frame 
             if len(frame.shape) == 2:
                 converted = cv2.cvtColor(frame, code = cv2.COLOR_GRAY2BGR )
-            np.vstack((stitched, converted))
-        cv2.imshow("stitched", stitched)
-        cv2.waitKey(1)
+            stitched = np.vstack((stitched, converted))
+
+        return stitched
+
