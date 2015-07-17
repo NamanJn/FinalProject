@@ -19,6 +19,7 @@ class Tracker(object):
         self.counter = 0
         self.num_of_flies = num_of_flies
         self.positionsD = {}
+
     def getMeanOfContour(contour):
         pass
 
@@ -44,7 +45,7 @@ class Tracker(object):
 	#cv2.imshow("threshold without runing average ", self.binary_without_running_average )
 
         # getting the acummulator average
-        cv2.accumulateWeighted(src=gray_float,dst=self.accumulator,alpha=0.001)
+        cv2.accumulateWeighted(src=gray_float,dst=self.accumulator,alpha=0.0005)
         accumulator_int = self.accumulator.astype("uint8")
 
         #getting the diffs
@@ -150,6 +151,7 @@ class Tracker(object):
         print positions
         # Images to show
         imagesToShowL = [
+               frame,
                self.gray,
                self.diff,
                self.binary,
@@ -162,10 +164,8 @@ class Tracker(object):
         if cv2.waitKey(7) == ord('a'):
             pdb.set_trace()
 
-        if self.counter % 300 == 0 and self.counter> 1: pdb.set_trace()
+        if self.counter % 700 == 0 and self.counter> 1: pdb.set_trace()
         if len(bigcontours) == 0 and self.counter > 300: pdb.set_trace()
-
-
 
         return positions 
 

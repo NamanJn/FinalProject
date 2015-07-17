@@ -9,15 +9,15 @@ ee = execfile
 counter = 0
 
 # you need to specify this number 
-tube_number = 1
+tube_number = 4
 
 # tube 9, 
 # 1. fly sleeps for time.
 # 2. Fly contour gets split into half because the torso is below threshold 
 
-tube_height = 26
+tube_height = 23
 tube_length = 500
-tube_y = 135+ 42*(tube_number-1)
+tube_y = 135 + 42*(tube_number-1)
 tube_x = 70
 
 # reading the video
@@ -26,7 +26,7 @@ cap = cv2.VideoCapture("2flies.mp4")
 # initialising the tracker class
 
 ret, frame = cap.read()
-frameROI = frame[tube_y:tube_y+tube_height,tube_x:tube_x+tube_length]
+frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
 tracker = Tracker(frameROI,num_of_flies=2)
 
 while True:
