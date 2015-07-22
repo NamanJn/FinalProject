@@ -3,10 +3,12 @@ import cv2
 import pdb
 import numpy as np 
 import operator
+import os
 ee = execfile
 
 class Tracker(object):
     def __init__(self, frame, num_of_flies=1):
+
         self.frame = frame
         self.gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
         self.gray_float = self.gray.astype("float32") 
@@ -19,7 +21,10 @@ class Tracker(object):
         self.counter = 0
         self.num_of_flies = num_of_flies
         self.positionsD = {}
-
+        self.previousIsOne = False 
+        self.fourcc= None 
+        self.out = None 
+        #self.printOut = open("csv.csv","w") 
     def getMeanOfContour(contour):
         pass
 
@@ -167,7 +172,35 @@ class Tracker(object):
         if self.counter % 700 == 0 and self.counter> 1: pdb.set_trace()
         if len(bigcontours) == 0 and self.counter > 300: pdb.set_trace()
 
+        print bigContourFrame.shape
+        if self.counter == 1:
+            os.system("echo %s > csv.csv" % len(bigcontours))
+        else:
+            os.system("echo %s >> csv.csv" % len(bigcontours))
+        #self.printOut.write("%s\n" % len(bigcontours))
         return positions 
+
+
+    def writeSingleContourVideos():
+        if self.counter < 600 and len(bigcontours) ==1:
+            if not self.previousIsOne:
+                #self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
+                imageToWrite = self.stitchImages([bigContourFrame])
+                print imageToWrite.shape
+                fourcc = cv2.cv.CV_FOURCC('X','V','I','D')
+                self.out = cv2.VideoWriter('output%s.avi' % self.counter ,
+                        fourcc, 20.0, (imageToWrite.shape[0],imageToWrite.shape[1]))
+                #cv2.imwrite("image%s.png" % self.counter, self.stitchImages([bigContourFrame]))
+                self.out.write(imageToWrite)
+                self.previousIsOne = True
+            else:
+                self.out.write(bigContourFrame)
+                print "Writing now"
+                pdb.set_trace() 
+        else:
+            if self.previousIsOne:
+                self.out.release() 
+                self.previousIsOne = False
 
     def getSquarishContour(self, contourL, draw=False):
 

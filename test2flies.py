@@ -24,6 +24,8 @@ tube_x = 70
 cap = cv2.VideoCapture("2flies.mp4")
 
 # initialising the tracker class
+print cap.get(3)
+print cap.get(4)
 
 ret, frame = cap.read()
 frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
@@ -37,8 +39,10 @@ while True:
 	print counter 
 
         frameROI = frame[tube_y:tube_y+tube_height,tube_x:tube_x+tube_length]
-
+        print frameROI.shape
+        #pdb.set_trace()
         positions = tracker.apply(frameROI)
+
 
 
 
