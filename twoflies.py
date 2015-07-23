@@ -22,7 +22,7 @@ class Tracker(object):
         self.num_of_flies = num_of_flies
         self.positionsD = {}
         self.previousIsOne = False 
-        self.fourcc= None 
+        self.fourcc = None 
         self.out = None 
         #self.printOut = open("csv.csv","w") 
     def getMeanOfContour(contour):
@@ -173,10 +173,11 @@ class Tracker(object):
         if len(bigcontours) == 0 and self.counter > 300: pdb.set_trace()
 
         print bigContourFrame.shape
-        if self.counter == 1:
-            os.system("echo %s > csv.csv" % len(bigcontours))
-        else:
-            os.system("echo %s >> csv.csv" % len(bigcontours))
+        if self.counter > 0:
+            if self.counter == 1:
+                os.system("echo %s > csv.csv" % len(bigcontours))
+            else:
+                os.system("echo %s >> csv.csv" % len(bigcontours))
         #self.printOut.write("%s\n" % len(bigcontours))
         return positions 
 
