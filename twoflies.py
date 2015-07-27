@@ -24,6 +24,7 @@ class Tracker(object):
         self.previousIsOne = False 
         self.fourcc = None 
         self.out = None 
+        self.speed = 7 
         #self.printOut = open("csv.csv","w") 
     def getMeanOfContour(contour):
         pass
@@ -166,12 +167,18 @@ class Tracker(object):
         stitched = self.stitchImages(imagesToShowL)
 
         cv2.imshow("stitched", stitched)
-        if cv2.waitKey(7) == ord('a'):
+        if cv2.waitKey(self.speed) == ord('a'):
             pdb.set_trace()
+            
+        elif cv2.waitKey(self.speed) == ord("f"):
+            self.speed = 7
+
+        elif cv2.waitKey(self.speed) == ord("s"):
+            self.speed = 100 
 
         if self.counter % 700 == 0 and self.counter> 1: pdb.set_trace()
         if len(bigcontours) == 0 and self.counter > 300: pdb.set_trace()
-
+        
         print bigContourFrame.shape
         if self.counter > 0:
             if self.counter == 1:
@@ -179,6 +186,8 @@ class Tracker(object):
             else:
                 os.system("echo %s >> csv.csv" % len(bigcontours))
         #self.printOut.write("%s\n" % len(bigcontours))
+        if 280 < self.counter < 400:
+            cv2.imwrite("coll_images/imsg%s.png" %self.counter,bigContourFrame)
         return positions 
 
 
