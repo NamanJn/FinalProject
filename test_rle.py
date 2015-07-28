@@ -53,8 +53,37 @@ def cutvideo(startFrame,length):
     # This is to rescale the video
     os.system("ffmpeg -i cropped.mp4 -vf scale=1000:46 collision%s.mp4 -y" % startFrame)
 
+
+def cutContourVideo(startFrame,length):
+    # This is to cut the video from start-end time.
+    frame_rate = 25.0
+    buffer_time_before_collision = 0.5 
+    buffer_time_after = 0.1 
+    collision_start_time = startFrame/frame_rate
+    collision_duration_time = length/frame_rate
+
+    start_time = collision_start_time - buffer_time_before_collision #+ 500/frame_rate
+    
+    print "start_time is ", start_time
+    end_time = collision_start_time + collision_duration_time  + buffer_time_after
+    print "the end_time is ", end_time
+    #pdb.set_trace()
+
+    stringToExecute = "ffmpeg -i output1.avi -vf trim=%s:%s collision_vids/collision%s_withcontours.mp4 -y" %(start_time, end_time,startFrame)
+
+    #pdb.set_trace()
+    os.system(stringToExecute)
+
+
 string = readcsv("csv.csv")
 
 rle = myencode(string)
 ones = [ i for i in rle if i[0] == "1" ]
 print ones
+
+
+#cutvideo(663, 8)
+# creating chunks of the videos.
+for i,collisionLength,collisionStartFrame in ones:
+    if collisionStartFrame > 300:
+        cutContourVideo(collisionStartFrame,collisionLength)

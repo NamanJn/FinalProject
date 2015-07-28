@@ -15,12 +15,14 @@ ee = execfile
 counter = 0
 
 # reading the video
-cap = cv2.VideoCapture("collision2478.mp4")
+collisionFrame = 916 
+cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
 
 # initialising the tracker class
 print cap.get(3)
 print cap.get(4)
 print cap.get(5)
+
 
 ret, frame = cap.read()
 #frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
@@ -50,10 +52,6 @@ while True:
 
 frame_shape = frame.shape
 write_video = False 
-if write_video:
-    fourcc = cv2.cv.CV_FOURCC('m','p','4','v')
-    out = cv2.VideoWriter('output_test.mp4' , fourcc,
-        fps=20, frameSize=(frame_shape[0], frame_shape[1]))
 
 while True:
         breakloop = False
@@ -62,11 +60,9 @@ while True:
 	ret, frame = cap.read()
         
         if not ret:
-            cv2.setMouseCallback('image', draw_circle, param=4)
-            print positionsL
             while True:
                 aKey = cv2.waitKey(0) 
-                if aKey == ord("a") and len(positionsL) ==4:
+                if aKey == ord("a"):
                     breakloop = True
                     break
                          
@@ -74,13 +70,19 @@ while True:
             break
 
         cv2.imshow("image", frame)
-	counter +=1
-	#print counter 
+	counter += 1
+	print counter 
 
-        #frameROI = frame[tube_y:tube_y+tube_height,tube_x:tube_x+tube_length]
-        #positions = tracker.apply(frameROI)
 
-        if write_video:
-            out.write(frameROI)
-            if counter > 500:
-                out.release()
+while True:
+    x = raw_input("Did identities switch? [y/n]")
+    if x == "y":
+        print "ok switched"
+        break
+    elif x == "n":
+        print "ok didn't switch"
+        break
+    else:
+        print "try again"
+
+

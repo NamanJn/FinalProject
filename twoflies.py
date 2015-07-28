@@ -29,12 +29,12 @@ class Tracker(object):
         self.writing = False
 
     def writeAllVideo(self, bigContourFrame):
-        if self.counter < 2500:
+        if self.counter < 800:
                 if not self.writing:
                     #self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
                     imageToWrite = self.stitchImages([bigContourFrame])
                     print imageToWrite.shape
-                    fourcc = cv2.cv.CV_FOURCC('m','p','4','v')
+                    fourcc = cv2.cv.CV_FOURCC(*'mp4v')
                     pdb.set_trace()
                     self.out = cv2.VideoWriter('output%s.avi' % self.counter ,fourcc, 25.0, (imageToWrite.shape[1],imageToWrite.shape[0]))
                     self.writing = True;
@@ -149,6 +149,7 @@ class Tracker(object):
             for index,item in enumerate(positions):
                 self.positionsD[index+1] = item
         
+        # conditional block. Testing if 1 or 2 contours found
         if len(positions) == 2:
             positions_proper = {}
             for fly_id in self.positionsD: 
@@ -170,8 +171,9 @@ class Tracker(object):
         else:
             self.positionsD = {}
 
+
         print positions
-        # Images to show
+        # Images to show.
         imagesToShowL = [
                frame,
                self.gray,
@@ -182,6 +184,7 @@ class Tracker(object):
                 ]
         stitched = self.stitchImages(imagesToShowL)
 
+        # adding key handlers and showign the stiched image
         cv2.imshow("stitched", stitched)
         if cv2.waitKey(self.speed) == ord('a'):
             pdb.set_trace()
@@ -192,10 +195,8 @@ class Tracker(object):
         elif cv2.waitKey(self.speed) == ord("s"):
             self.speed = 100 
 
-        if self.counter % 700 == 0 and self.counter> 1: pdb.set_trace()
-        if len(bigcontours) == 0 and self.counter > 300: pdb.set_trace()
         
-        print bigContourFrame.shape
+
         if self.counter > 0:
             if self.counter == 1:
                 os.system("echo %s > csv.csv" % len(bigcontours))

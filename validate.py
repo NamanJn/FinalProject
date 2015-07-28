@@ -9,7 +9,7 @@ ee = execfile
 counter = 0
 
 # reading the video
-cap = cv2.VideoCapture("collision2478.mp4")
+cap = cv2.VideoCapture("collision663.mp4")
 
 # initialising the tracker class
 print cap.get(3)
