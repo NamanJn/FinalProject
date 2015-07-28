@@ -26,8 +26,24 @@ class Tracker(object):
         self.out = None 
         self.speed = 7 
         #self.printOut = open("csv.csv","w") 
-    def getMeanOfContour(contour):
-        pass
+        self.writing = False
+
+    def writeAllVideo(self, bigContourFrame):
+        if self.counter < 2500:
+                if not self.writing:
+                    #self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
+                    imageToWrite = self.stitchImages([bigContourFrame])
+                    print imageToWrite.shape
+                    fourcc = cv2.cv.CV_FOURCC('m','p','4','v')
+                    pdb.set_trace()
+                    self.out = cv2.VideoWriter('output%s.avi' % self.counter ,fourcc, 25.0, (imageToWrite.shape[1],imageToWrite.shape[0]))
+                    self.writing = True;
+                else:
+                    imageToWrite = self.stitchImages([bigContourFrame])
+                    self.out.write(imageToWrite)
+        else:
+            self.out.release()
+
 
     def apply(self,frame):
         """
@@ -186,8 +202,10 @@ class Tracker(object):
             else:
                 os.system("echo %s >> csv.csv" % len(bigcontours))
         #self.printOut.write("%s\n" % len(bigcontours))
-        if 280 < self.counter < 400:
-            cv2.imwrite("coll_images/imsg%s.png" %self.counter,bigContourFrame)
+        #if 280 < self.counter < 400:
+        #    cv2.imwrite("coll_images/imsg%s.png" %self.counter,bigContourFrame)
+
+        self.writeAllVideo(bigContourFrame);
         return positions 
 
 
@@ -198,8 +216,8 @@ class Tracker(object):
                 imageToWrite = self.stitchImages([bigContourFrame])
                 print imageToWrite.shape
                 fourcc = cv2.cv.CV_FOURCC('X','V','I','D')
-                self.out = cv2.VideoWriter('output%s.avi' % self.counter ,
-                        fourcc, 20.0, (imageToWrite.shape[0],imageToWrite.shape[1]))
+                self.out = cv2.VideoWriter('output%s.mp4' % self.counter ,
+                        fourcc, 25.0, (imageToWrite.shape[0],imageToWrite.shape[1]))
                 #cv2.imwrite("image%s.png" % self.counter, self.stitchImages([bigContourFrame]))
                 self.out.write(imageToWrite)
                 self.previousIsOne = True
@@ -211,6 +229,7 @@ class Tracker(object):
             if self.previousIsOne:
                 self.out.release() 
                 self.previousIsOne = False
+
 
     def getSquarishContour(self, contourL, draw=False):
 

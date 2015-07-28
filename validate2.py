@@ -47,6 +47,7 @@ while True:
     if aKey == ord("a"):
         break
 
+
 frame_shape = frame.shape
 write_video = False 
 if write_video:
