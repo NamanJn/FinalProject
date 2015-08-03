@@ -57,8 +57,8 @@ def cutvideo(startFrame,length):
 def cutContourVideo(startFrame,length):
     # This is to cut the video from start-end time.
     frame_rate = 25.0
-    buffer_time_before_collision = 0.5 
-    buffer_time_after = 0.1 
+    buffer_time_before_collision = 0.1
+    buffer_time_after = 0.05
     collision_start_time = startFrame/frame_rate
     collision_duration_time = length/frame_rate
 

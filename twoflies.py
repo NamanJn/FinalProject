@@ -29,7 +29,7 @@ class Tracker(object):
         self.writing = False
 
     def writeAllVideo(self, bigContourFrame):
-        if self.counter < 1000:
+        if self.counter < 1500:
                 if not self.writing:
                     #self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
                     imageToWrite = self.stitchImages([bigContourFrame])

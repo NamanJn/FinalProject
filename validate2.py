@@ -55,6 +55,7 @@ for videoS in videosL:
     #collisionFrame = 916 
     #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
     pdb.set_trace()    
+    print "playing collision video:", videoS
     playVideo(os.path.join(videoDirS, videoS))
 
     #frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
