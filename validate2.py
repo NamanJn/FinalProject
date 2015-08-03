@@ -12,44 +12,15 @@ from twoflies import Tracker
 
 ee = execfile
 
-counter = 0
+
 videoDirS = "collision_vids"
 videosL = os.listdir(videoDirS)
 
+def playVideo(videoNameS):
 
-for videoS in videosL:
-    # reading the video
-    #collisionFrame = 916 
-    #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
-    pdb.set_trace()    
+    counter = 0
     cap = cv2.VideoCapture(os.path.join(videoDirS,videoS))
-
-    # initialising the tracker class
-    print cap.get(3)
-    print cap.get(4)
-    print cap.get(5)
-
-
     ret, frame = cap.read()
-    #frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
-    #tracker = Tracker(frame, num_of_flies=2)
-
-    # listener function
-    #positionsL = []
-    #def draw_circle(event,x,y,flags,param):
-    #    global cv2,frame,positionsL
-    #    print param
-    #    if event == cv2.EVENT_LBUTTONUP and len(positionsL) < param:
-    #        print x,y
-    #        positionsL.append([x,y])
-    #        print "Now positionsL is,", positionsL
-    #
-    ## binding listener to the image
-    #cv2.namedWindow('image')
-    #cv2.setMouseCallback('image', draw_circle, param=2)
-
-    # showing the first image and waiting for 2 clicks
-
     cv2.imshow("image",frame)
     while True:
         aKey = cv2.waitKey(0) 
@@ -78,17 +49,45 @@ for videoS in videosL:
 
             cv2.imshow("image", frame)
             counter += 1
-            print counter 
+     
+for videoS in videosL:
+    # reading the video
+    #collisionFrame = 916 
+    #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
+    pdb.set_trace()    
+    playVideo(os.path.join(videoDirS, videoS))
+
+    #frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
+    #tracker = Tracker(frame, num_of_flies=2)
+
+    # listener function
+    #positionsL = []
+    #def draw_circle(event,x,y,flags,param):
+    #    global cv2,frame,positionsL
+    #    print param
+    #    if event == cv2.EVENT_LBUTTONUP and len(positionsL) < param:
+    #        print x,y
+    #        positionsL.append([x,y])
+    #        print "Now positionsL is,", positionsL
+    #
+    ## binding listener to the image
+    #cv2.namedWindow('image')
+    #cv2.setMouseCallback('image', draw_circle, param=2)
+
+    # showing the first image and waiting for 2 clicks
 
     while True:
-        x = raw_input("Did identities switch? [y/n]")
+        x = raw_input("Did identities switch? [y/n/r]: ")
         if x == "y":
             print "ok switched"
             break
         elif x == "n":
             print "ok didn't switch"
             break
+        elif x == "r":
+            print "playing again"
+            playVideo(os.path.join(videoDirS, videoS))
         else:
             print "try again"
 
-    cap.release()
+print "finished!"
