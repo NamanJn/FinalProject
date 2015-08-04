@@ -30,7 +30,8 @@ print cap.get(5)
 
 ret, frame = cap.read()
 frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
-tracker = Tracker(frameROI,num_of_flies=2)
+# initialising the tracker function.
+tracker = Tracker(frameROI,num_of_flies=2, tubeNumber = tube_number)
 
 frame_shape = frameROI.shape
 write_video = False 

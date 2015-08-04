@@ -7,8 +7,8 @@ import os
 ee = execfile
 
 class Tracker(object):
-    def __init__(self, frame, num_of_flies=1):
-
+    def __init__(self, frame, num_of_flies=1, tubeNumber = 1):
+        self.tubeNumber = tubeNumber 
         self.frame = frame
         self.gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
         self.gray_float = self.gray.astype("float32") 
