@@ -200,7 +200,7 @@ class Tracker(object):
             cy = int(M['m01']/M['m00'])
 
             positions.append([cx,cy])   
-        return bigcontours
+        return positions 
 
     def addKeyHandlers(self):
         if cv2.waitKey(self.speed) == ord('a'):
