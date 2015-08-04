@@ -74,16 +74,16 @@ def cutContourVideo(startFrame,length):
     #pdb.set_trace()
     os.system(stringToExecute)
 
+if __name__ == "__main__":
+    string = readcsv("csv.csv")
 
-string = readcsv("csv.csv")
-
-rle = myencode(string)
-ones = [ i for i in rle if i[0] == "1" ]
-print ones
+    rle = myencode(string.replace("0","1")) # replacing 0s with 1s.
+    ones = [ i for i in rle if i[0] == "1" ]
+    print ones
 
 
-#cutvideo(663, 8)
-# creating chunks of the videos.
-for i,collisionLength,collisionStartFrame in ones:
-    if collisionStartFrame > 300:
-        cutContourVideo(collisionStartFrame,collisionLength)
+    #cutvideo(663, 8)
+    # creating chunks of the videos.
+    for i,collisionLength,collisionStartFrame in ones:
+        if collisionStartFrame > 300:
+            cutContourVideo(collisionStartFrame,collisionLength)
