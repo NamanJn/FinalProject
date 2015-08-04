@@ -123,30 +123,23 @@ class Tracker(object):
         # no need for this step if there is only 1 contour.
         # unccoment line below if you want to have the length of the big 
         #if self.counter> 100 and len(bigcontours) > 1:
-        if self.counter > 1000:
+        #if self.counter > 1000:
 
-            squarishcontourL = self.getSquarishContour(bigcontours,draw=False)
+        #    squarishcontourL = self.getSquarishContour(bigcontours,draw=False)
 
-            masked = np.zeros(self.gray.shape,np.uint8)     
-            cv2.drawContours(masked,bigcontours,-1,(255,255,0),-1)
-            pixelpoints = np.transpose(np.nonzero(masked))
-            mean_val = cv2.mean(self.gray,mask = masked)
-            print "mean_value,", mean_val
-            #cv2.imshow("mask", masked) 
+        #    masked = np.zeros(self.gray.shape,np.uint8)     
+        #    cv2.drawContours(masked,bigcontours,-1,(255,255,0),-1)
+        #    pixelpoints = np.transpose(np.nonzero(masked))
+        #    mean_val = cv2.mean(self.gray,mask = masked)
+        #    print "mean_value,", mean_val
+        #    #cv2.imshow("mask", masked) 
 
-            frame_with_square_contour= self.frame.copy()
-            cv2.drawContours(frame_with_square_contour, squarishcontourL,-1,(255,255,0),1)
-	    #cv2.imshow("2nd filter step - squarish", frame_with_square_contour)
+        #    frame_with_square_contour= self.frame.copy()
+        #    cv2.drawContours(frame_with_square_contour, squarishcontourL,-1,(255,255,0),1)
+	#    #cv2.imshow("2nd filter step - squarish", frame_with_square_contour)
 
-        # printing out the position of the fly
-        # getting the moment (to find the center) 
-        positions = []
-        for i in bigcontours:
-            M = cv2.moments(i)
-            cx = int(M['m10']/M['m00'])
-            cy = int(M['m01']/M['m00'])
-
-            positions.append([cx,cy])   
+        # getting the positions of the flies 
+        positions = self.getPositions(bigcontours)
          
         # labelling the id of the flies
         if self.positionsD == {} and len(positions) == 2:
@@ -198,6 +191,16 @@ class Tracker(object):
         if self.counter == 1232:
             pdb.set_trace()
         return positions 
+
+    def getPositions(self, bigcontours):
+        positions = []
+        for i in bigcontours:
+            M = cv2.moments(i)
+            cx = int(M['m10']/M['m00'])
+            cy = int(M['m01']/M['m00'])
+
+            positions.append([cx,cy])   
+        return bigcontours
 
     def addKeyHandlers(self):
         if cv2.waitKey(self.speed) == ord('a'):
