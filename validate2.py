@@ -1,14 +1,27 @@
+#!/home/naman/miniconda/bin/python2.7
+
+"""
+Usage:
+        validate2.py <username>
+
+"""
+
 import inspect 
 import cv2
 import pdb
 import os
+from twoflies import Tracker
+import re
+import docopt
 # This script's aim is to get input from a user
 # whether the tracking system switched the identity or no
 # Ths userinput will just be "yes" or "no".
 # If yes, then switch the identities downstream of the collision.
 # If no, then nothing is changed downstream. 
-from twoflies import Tracker
-import re
+
+
+d = docopt.docopt(__doc__)
+currentUser = d['<username>']
 ee = execfile
 
 
@@ -95,7 +108,7 @@ while video_number < len(videosL):
                 print "ok didn't switch"
 
             video_number += 1
-            os.system("echo '%s,%s' >> identity.csv" % (collisionFrame,x) )
+            os.system("echo '%s,%s,%s' >> identity.csv" % (collisionFrame, x, currentUser) )
             break 
         elif x == "r":
             print "playing again chosen.... press a to continue"
