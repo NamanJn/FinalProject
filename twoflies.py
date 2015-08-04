@@ -170,7 +170,7 @@ class Tracker(object):
                         cv2.FONT_HERSHEY_SIMPLEX,
                         0.75,
                         (255,255,255))
-            print positions_proper
+            print "This is the positions_proper", positions_proper
             self.positionsD = positions_proper
         else:
             self.positionsD = {}
@@ -190,6 +190,16 @@ class Tracker(object):
 
         # adding key handlers and showign the stiched image
         cv2.imshow("stitched", stitched)
+        self.addKeyHandlers()
+
+        self.writeAllVideo(bigContourFrame);
+
+        self.writeDataFile(self.positionsD, bigcontours);
+        if self.counter == 1232:
+            pdb.set_trace()
+        return positions 
+
+    def addKeyHandlers(self):
         if cv2.waitKey(self.speed) == ord('a'):
             pdb.set_trace()
             
@@ -199,22 +209,28 @@ class Tracker(object):
         elif cv2.waitKey(self.speed) == ord("s"):
             self.speed = 100 
 
+    def writeDataFile(self, positions_proper, bigcontours):
+            if positions_proper == {}:
+                positions_proper = {"1":"200.0","2":"300.0"}
+
+            if self.counter == 1:
+                string = ">"
+            elif self.counter > 1:
+                string = ">>"
+            else:
+                raise ValueError("self.counter is less than 1") 
+
+            for i in positions_proper:
+                os.system("echo '%s,fly%s,%s' %s data.csv" % (self.counter, 
+                    i,
+                    positions_proper[i], 
+                    string))
+
+            os.system("echo %s %s csv.csv" % (len(bigcontours),string))
+
         
 
-        if self.counter > 0:
-            if self.counter == 1:
-                os.system("echo %s > csv.csv" % len(bigcontours))
-            else:
-                os.system("echo %s >> csv.csv" % len(bigcontours))
-        #self.printOut.write("%s\n" % len(bigcontours))
-        #if 280 < self.counter < 400:
-        #    cv2.imwrite("coll_images/imsg%s.png" %self.counter,bigContourFrame)
-
-        self.writeAllVideo(bigContourFrame);
-        return positions 
-
-
-    def writeSingleContourVideos():
+    def writeSingleContourVideos(self):
         if self.counter < 600 and len(bigcontours) ==1:
             if not self.previousIsOne:
                 #self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -262,6 +278,7 @@ class Tracker(object):
             stitched = frameL[0].copy()
         else: 
             print "The images are messed up"
+            raise ValueError("The images are neither are 3 or 2 dimensional") 
 
         rest_of_frames = frameL[1:]
 
