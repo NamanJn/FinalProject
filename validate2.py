@@ -61,6 +61,7 @@ while video_number < len(videosL):
     #collisionFrame = 916 
     #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
     videoS = videosL[::-1][video_number]
+    collisionFrame = int(re.findall(r"collision(\d+)_", videoS)[0])
     print "playing collision video:", videoS
     playVideo(os.path.join(videoDirS, videoS))
 
@@ -85,14 +86,17 @@ while video_number < len(videosL):
 
     while True:
         x = raw_input("Did identities switch? [y/n/r/p]: ")
-        if x == "y":
-            print "ok switched"
+        if x == "y" or x == "n":
+
+            if x == "y":
+                print "ok switched"
+
+            elif x == "n":
+                print "ok didn't switch"
+
             video_number += 1
-            break
-        elif x == "n":
-            print "ok didn't switch"
-            video_number += 1
-            break
+            os.system("echo '%s,%s' >> identity.csv" % (collisionFrame,x) )
+            break 
         elif x == "r":
             print "playing again chosen.... press a to continue"
             playVideo(os.path.join(videoDirS, videoS))
