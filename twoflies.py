@@ -99,8 +99,12 @@ class Tracker(object):
         #cv2.imshow("no filtering - all contours shown", allContourFrame)
 
         # getting big contours  
-        bigcontours = [i for i in contourL if cv2.contourArea(i)>30]
-        
+        bigcontours = []
+        for contourItem in contourL:
+            contourArea = cv2.contourArea(contourItem)
+            print "contourArea is ,", contourArea
+            if 30 < contourArea < 700:
+                bigcontours.append(contourItem) 
         # This block is to prevent the losing of the contour
         # need to redo this
 
