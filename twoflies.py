@@ -200,7 +200,7 @@ class Tracker(object):
 
         self.writeDataFile(positions_proper, bigcontours);
 
-        self.writeContourImages(bigContourFrame)
+        self.writeContourImages(self.stitchImages([bigContourFrame]))
 
         print '----------------------'
         return positions 
