@@ -27,6 +27,7 @@ class Tracker(object):
         self.speed = 7 
         #self.printOut = open("csv.csv","w") 
         self.writing = False
+        self.contourVideoName = "output1.avi"
 
     def writeAllVideo(self, bigContourFrame):
         if self.counter < 1500:
@@ -36,7 +37,7 @@ class Tracker(object):
                     print imageToWrite.shape
                     fourcc = cv2.cv.CV_FOURCC(*'mp4v')
                     pdb.set_trace()
-                    self.out = cv2.VideoWriter('output%s.avi' % self.counter ,fourcc, 25.0, (imageToWrite.shape[1],imageToWrite.shape[0]))
+                    self.out = cv2.VideoWriter(self.contourVideoName, fourcc, 25.0, (imageToWrite.shape[1],imageToWrite.shape[0]))
                     self.writing = True;
                 else:
                     imageToWrite = self.stitchImages([bigContourFrame])
