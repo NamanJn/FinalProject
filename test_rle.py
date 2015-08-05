@@ -81,7 +81,7 @@ if __name__ == "__main__":
     ones = [ i for i in rle if i[0] == "1" ]
     print ones
 
-
+    pdb.set_trace()
     #cutvideo(663, 8)
     # creating chunks of the videos.
     for i,collisionLength,collisionStartFrame in ones:

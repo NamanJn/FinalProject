@@ -27,7 +27,9 @@ class Tracker(object):
         self.speed = 7 
         #self.printOut = open("csv.csv","w") 
         self.writing = False
-        self.contourVideoName = "output1.avi"
+        self.contourVideoName = "output_short_collisions_correct.avi"
+        self.collisionLength = 0
+        self.contourImgDir = "contour_imgs"
 
     def writeAllVideo(self, bigContourFrame):
         if self.counter < 1500:
@@ -142,22 +144,28 @@ class Tracker(object):
         # getting the positions of the flies 
         positions = self.getPositions(bigcontours)
          
-        # labelling the id of the flies
-        if self.positionsD == {} and len(positions) == 2:
-            for index,item in enumerate(positions):
-                self.positionsD[index+1] = item
         
         # conditional block. Testing if 1 or 2 contours found
-        if len(positions) == 2:
-            positions_proper = {}
-            for fly_id in self.positionsD: 
-                fly_coordinate = self.positionsD[fly_id]
-                distances = [ sum((np.array(fly_coordinate) - np.array(i))**2) for i in positions ]
-                min_index = distances.index(min(distances))
-                positions_proper[fly_id] = positions[min_index]
-            
+        positions_proper = {}
+
+        if len(positions) >= 2:
+
+            if self.collisionLength > 10:
+                for index, item in enumerate(positions):
+                    self.positionsD[index+1] = item
+                    positions_proper = self.positionsD
+
+            else:
+                for fly_id in self.positionsD: 
+                    fly_coordinate = self.positionsD[fly_id]
+                    distances = [ sum((np.array(fly_coordinate) - np.array(i))**2) for i in positions ]
+                    min_index = distances.index(min(distances))
+                    positions_proper[fly_id] = positions[min_index]
+                    print "distances are ", distances
+                    print min_index
+
             #print distances 
-            for fly_id,fly_coordinate in positions_proper.iteritems():        
+            for fly_id, fly_coordinate in positions_proper.iteritems():        
                 cv2.putText(bigContourFrame,
                         str(fly_id),
                         (fly_coordinate[0],18),
@@ -166,32 +174,39 @@ class Tracker(object):
                         (255,255,255))
             print "This is the positions_proper", positions_proper
             self.positionsD = positions_proper
+            self.collisionLength = 0
         else:
-            self.positionsD = {}
+            self.collisionLength += 1
 
 
         print positions
         # Images to show.
-        imagesToShowL = [
-               frame,
-               self.gray,
-               self.diff,
-               self.binary,
-               allContourFrame,
-               bigContourFrame
-                ]
-        stitched = self.stitchImages(imagesToShowL)
+        if self.counter > 700:
+            imagesToShowL = [
+                   frame,
+                   self.gray,
+                   self.diff,
+                   self.binary,
+                   allContourFrame,
+                   bigContourFrame
+                    ]
+            stitched = self.stitchImages(imagesToShowL)
 
-        # adding key handlers and showign the stiched image
-        cv2.imshow("stitched", stitched)
+            # adding key handlers and showign the stiched image
+            cv2.imshow("stitched", stitched)
         self.addKeyHandlers()
 
         self.writeAllVideo(bigContourFrame);
 
-        self.writeDataFile(self.positionsD, bigcontours);
-        if self.counter == 1232:
-            pdb.set_trace()
+        self.writeDataFile(positions_proper, bigcontours);
+
+        self.writeContourImages(bigContourFrame)
+
+        print '----------------------'
         return positions 
+
+    def writeContourImages(self, image):
+        cv2.imwrite(os.path.join(self.contourImgDir,"frame%s.png" % self.counter),image) 
 
     def getPositions(self, bigcontours):
         positions = []
@@ -225,7 +240,7 @@ class Tracker(object):
                 raise ValueError("self.counter is less than 1") 
 
             for i in positions_proper:
-                os.system("echo '%s,fly%s,%s' %s data.csv" % (self.counter, 
+                os.system("echo '%s,fly%s,%s' %s data_shortcoll.csv" % (self.counter, 
                     i,
                     positions_proper[i], 
                     string))

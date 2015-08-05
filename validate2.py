@@ -10,7 +10,7 @@ import inspect
 import cv2
 import pdb
 import os
-from twoflies import Tracker
+#from twoflies import Tracker
 import re
 import docopt
 # This script's aim is to get input from a user
@@ -73,7 +73,7 @@ while video_number < len(videosL):
     # reading the video
     #collisionFrame = 916 
     #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
-    videoS = videosL[::-1][video_number]
+    videoS = videosL[video_number]
     collisionFrame = int(re.findall(r"collision(\d+)_", videoS)[0])
     print "playing collision video:", videoS
     playVideo(os.path.join(videoDirS, videoS))
