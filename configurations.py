@@ -18,3 +18,6 @@ contour_images_dir = "contour_imgs"
 # validation_results_directory
 validation_results_dir = "validation_results"
 
+
+# raw images directory
+raw_imgs_dir = "raw_imgs"
