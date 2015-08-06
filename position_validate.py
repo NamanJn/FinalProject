@@ -22,14 +22,14 @@ class ImgListener(object):
         self.real_positionsL = []
         #self.imageNumber = imageNumber
 
-    def listen_for_click(self,event,x,y,flags,param):
+    def listen_for_click(self, event, x, y, flags, param):
         
         #print param
         if event == cv2.EVENT_LBUTTONUP and len(self.positionsL) < param:
-            print x,y
+            print x, y
             self.positionsL.append([x,y])
             print "Now positionsL is,", self.positionsL
-            coordinates = list(np.array([x,y])/2)
+            coordinates = list(np.array([x, y])/2)
             self.real_positionsL.append(coordinates)
             print "Now positions after halving is,", self.real_positionsL
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
         img_nameS = "frame%s.png" % i
         print "image is %s" % img_nameS
-        frame = cv2.imread(os.path.join(contour_img_dir,img_nameS)    )
+        frame = cv2.imread(os.path.join(contour_img_dir, img_nameS))
         listener = ImgListener()
 
         # binding listener to the image
@@ -49,7 +49,7 @@ if __name__ == "__main__":
         cv2.setMouseCallback('image', listener.listen_for_click, param=2)
 
         # showing the first image and waiting for 2 clicks
-        cv2.imshow("image",frame)
+        cv2.imshow("image", frame)
         fileToWriteResults = os.path.join(validation_results_dir, results_file)
 
         print "press 's' to skip to next image"
@@ -60,7 +60,7 @@ if __name__ == "__main__":
             aKey = cv2.waitKey(0) 
 
             if aKey == ord("a") and len(listener.positionsL) == 2:
-                for index,positionsL in enumerate(listener.real_positionsL):
+                for index, positionsL in enumerate(listener.real_positionsL):
                     os.system("echo '%s,fly%s,%s,%s' >> %s" % (i, 
                         index+1,
                         positionsL[0],
