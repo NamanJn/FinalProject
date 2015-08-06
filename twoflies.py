@@ -30,6 +30,7 @@ class Tracker(object):
         self.contourVideoName = "output_short_collisions_correct.avi"
         self.collisionLength = 0
         self.contourImgDir = "contour_imgs"
+        self.rawImgDir = "raw_imgs"
 
     def writeAllVideo(self, bigContourFrame):
         if self.counter < 1500:
@@ -164,17 +165,21 @@ class Tracker(object):
                     print "distances are ", distances
                     print min_index
 
-            #print distances 
-            for fly_id, fly_coordinate in positions_proper.iteritems():        
-                cv2.putText(bigContourFrame,
-                        str(fly_id),
-                        (fly_coordinate[0],18),
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        0.75,
-                        (255,255,255))
+            #print distances
+            rawImg = frame.copy()
+            for fly_id, fly_coordinate in positions_proper.iteritems():
+                for image in [bigContourFrame, rawImg]:
+                    cv2.putText(image,
+                            str(fly_id),
+                            (fly_coordinate[0],18),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.75,
+                            (255,255,255))
             print "This is the positions_proper", positions_proper
             self.positionsD = positions_proper
             self.collisionLength = 0
+
+            self.writeRawImagesWithNumbers(self.stitchImages([rawImg]))
         else:
             self.collisionLength += 1
 
@@ -202,8 +207,13 @@ class Tracker(object):
 
         self.writeContourImages(self.stitchImages([bigContourFrame]))
 
+
+
         print '----------------------'
-        return positions 
+        return positions
+
+    def writeRawImagesWithNumbers(self, image):
+        cv2.imwrite(os.path.join(self.rawImgDir,"frame%s.png" % self.counter), image)
 
     def writeContourImages(self, image):
         cv2.imwrite(os.path.join(self.contourImgDir,"frame%s.png" % self.counter),image) 
