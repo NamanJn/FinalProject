@@ -2,12 +2,11 @@ import inspect
 import cv2
 import pdb
 import os
-import configurations
+from configurations import raw_imgs_dir, validation_results_dir
 import numpy as np
 ee = execfile
 
-contour_img_dir = configurations.contour_images_dir
-validation_results_dir = configurations.validation_results_dir
+dir_path = raw_imgs_dir
 results_file = "position_validation.csv"
 
 # create directory if doesn't exist.
@@ -41,7 +40,14 @@ if __name__ == "__main__":
 
         img_nameS = "frame%s.png" % i
         print "image is %s" % img_nameS
-        frame = cv2.imread(os.path.join(contour_img_dir, img_nameS))
+        image_path = os.path.join(dir_path, img_nameS)
+        if os.path.exists(image_path):
+            
+            frame = cv2.imread(image_path)
+        else:
+            print img_nameS, 'does not exist'
+            continue
+
         listener = ImgListener()
 
         # binding listener to the image
