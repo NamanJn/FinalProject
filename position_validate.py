@@ -10,6 +10,10 @@ contour_img_dir = configurations.contour_images_dir
 validation_results_dir = configurations.validation_results_dir
 results_file = "position_validation.csv"
 
+# create directory if doesn't exist.
+if not os.path.isdir(validation_results_dir):
+    os.makedirs(validation_results_dir)
+
 class ImgListener(object):
 
     def __init__(self):
@@ -32,7 +36,7 @@ class ImgListener(object):
 
 if __name__ == "__main__":
 
-    frame_interval = 75 
+    frame_interval = 25 
     for i in range(300, 1300, frame_interval):
 
         img_nameS = "frame%s.png" % i
@@ -57,9 +61,10 @@ if __name__ == "__main__":
 
             if aKey == ord("a") and len(listener.positionsL) == 2:
                 for index,positionsL in enumerate(listener.real_positionsL):
-                    os.system("echo '%s,fly%s,%s' >> %s" % (i, 
+                    os.system("echo '%s,fly%s,%s,%s' >> %s" % (i, 
                         index+1,
-                        positionsL,
+                        positionsL[0],
+                        positionsL[1],
                         fileToWriteResults))
                 break
             elif aKey == ord("s"):

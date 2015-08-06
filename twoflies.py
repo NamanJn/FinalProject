@@ -240,9 +240,10 @@ class Tracker(object):
                 raise ValueError("self.counter is less than 1") 
 
             for i in positions_proper:
-                os.system("echo '%s,fly%s,%s' %s data_shortcoll.csv" % (self.counter, 
+                os.system("echo '%s,fly%s,%s,%s' %s data_shortcoll.csv" % (self.counter, 
                     i,
-                    positions_proper[i], 
+                    positions_proper[i][0], 
+                    positions_proper[i][1], 
                     string))
 
             os.system("echo %s %s csv.csv" % (len(bigcontours),string))
