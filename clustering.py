@@ -16,7 +16,7 @@ feature_set = np.array([[7.65235, 2.08],
 
 generated = pd.read_csv("data_shortcoll.csv", names=col_names)
 
-
+feature_set = generated.iloc[:, 4:]
 km = KMeans(n_clusters=2)
 labels = km.fit(feature_set).labels_
 
