@@ -3,7 +3,7 @@ import cv2
 import pdb
 
 from twoflies import Tracker
-
+import configurations
 ee = execfile
 
 counter = 0
@@ -21,17 +21,19 @@ tube_y = 135 + 42*(tube_number-1)
 tube_x = 70
 
 # reading the video
-cap = cv2.VideoCapture("2flies.mp4")
+cap = cv2.VideoCapture("10fps_2flies.mp4")
 
 # initialising the tracker class
 print cap.get(3)
 print cap.get(4)
-print cap.get(5)
-
+fps = cap.get(5)
+print "frames per second", fps
+if configurations.fps != fps:
+    raise ValueError("Change fps in the configuration file!")
 ret, frame = cap.read()
 frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
 # initialising the tracker function.
-tracker = Tracker(frameROI,num_of_flies=2, tubeNumber = tube_number)
+tracker = Tracker(frameROI,fps=fps, num_of_flies=2, tubeNumber = tube_number)
 
 frame_shape = frameROI.shape
 write_video = False 

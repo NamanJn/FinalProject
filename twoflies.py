@@ -9,7 +9,7 @@ ee = execfile
 
 
 class Tracker(object):
-    def __init__(self, frame, writeData=False, num_of_flies=1, tubeNumber = 1):
+    def __init__(self, frame, tubeNumber, fps, writeData=False, num_of_flies=1 ):
         self.tubeNumber = tubeNumber 
         self.frame = frame
         self.gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
@@ -21,10 +21,11 @@ class Tracker(object):
         self.binary = self.gray.copy()
         self.previousContour = ["test"]
         self.counter = 0
+        self.fps = fps
         self.num_of_flies = num_of_flies
         self.positionsD = {}
         self.previousIsOne = False 
-        self.fourcc = None 
+        self.fourcc = None
         self.out = None 
         self.speed = 7
         self.writeData = writeData
@@ -42,7 +43,7 @@ class Tracker(object):
                     print imageToWrite.shape
                     fourcc = cv2.cv.CV_FOURCC(*'mp4v')
                     pdb.set_trace()
-                    self.out = cv2.VideoWriter(self.contourVideoName, fourcc, 25.0, (imageToWrite.shape[1],imageToWrite.shape[0]))
+                    self.out = cv2.VideoWriter(self.contourVideoName, fourcc, self.fps, (imageToWrite.shape[1],imageToWrite.shape[0]))
                     self.writing = True;
                 else:
                     imageToWrite = self.stitchImages([bigContourFrame])
@@ -59,7 +60,7 @@ class Tracker(object):
         print self.counter
         self.frame = frame.copy()
 
-	cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY,dst=self.gray)
+        cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY,dst=self.gray)
 
         gray_float = self.gray.astype("float32")
 
@@ -156,8 +157,7 @@ class Tracker(object):
         positions_proper = {}
 
         if len(positions) >= 2:
-
-            if self.collisionLength > 10:
+            if self.collisionLength > self.fps * 0.4:
                 for index, item in enumerate(positions_and_areas):
                     self.positionsD[index+1] = item
                     positions_proper = self.positionsD
@@ -216,6 +216,8 @@ class Tracker(object):
 
 
 
+        if len(positions) >= 3:
+            pdb.set_trace()
         print '----------------------'
         return positions
 
@@ -279,7 +281,7 @@ class Tracker(object):
                 print imageToWrite.shape
                 fourcc = cv2.cv.CV_FOURCC('X','V','I','D')
                 self.out = cv2.VideoWriter('output%s.mp4' % self.counter ,
-                        fourcc, 25.0, (imageToWrite.shape[0],imageToWrite.shape[1]))
+                        fourcc, self.fps, (imageToWrite.shape[0],imageToWrite.shape[1]))
                 #cv2.imwrite("image%s.png" % self.counter, self.stitchImages([bigContourFrame]))
                 self.out.write(imageToWrite)
                 self.previousIsOne = True

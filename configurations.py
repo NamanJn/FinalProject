@@ -9,7 +9,7 @@ height_multiple_to_increase = 2
 
 
 # frames_per_second
-fps = 25.0
+fps = 10
 
 # contour images directory
 contour_images_dir = "contour_imgs"
