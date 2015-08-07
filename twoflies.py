@@ -58,8 +58,8 @@ class Tracker(object):
         self.frame = frame.copy()
 
 	cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY,dst=self.gray)
-	#cv2.imshow("gray", self.gray)
-        gray_float = self.gray.astype("float32") 
+
+        gray_float = self.gray.astype("float32")
 
         # drawing the binary threshold image without running average
         cv2.threshold(src=self.gray,
@@ -67,8 +67,8 @@ class Tracker(object):
                 maxval=255,
                 type=cv2.THRESH_BINARY_INV,
                 dst=self.binary_without_running_average)
-         
-	#cv2.imshow("threshold without runing average ", self.binary_without_running_average )
+
+
 
         # getting the acummulator average
         cv2.accumulateWeighted(src=gray_float,dst=self.accumulator,alpha=0.0005)
@@ -76,7 +76,7 @@ class Tracker(object):
 
         #getting the diffs
         cv2.subtract(src1=accumulator_int, src2=self.gray, dst = self.diff)
-	#cv2.imshow("diff", self.diff)
+
 
 
         # drawing the binary threshold image with running average
@@ -85,7 +85,7 @@ class Tracker(object):
                 type=cv2.THRESH_BINARY,
                 dst=self.binary)
         contour = self.binary.copy()
-	#cv2.imshow("binary", self.binary)
+
 
 
         # finding the contours 
@@ -93,14 +93,14 @@ class Tracker(object):
                     #mode=cv2.RETR_TREE,
                     mode=cv2.RETR_EXTERNAL,
                     method=cv2.CHAIN_APPROX_SIMPLE)
-	#cv2.imshow("contour", contour)
+
         print "Length of all contours ",len(contourL)
 
 
         # drawing all contours 
         allContourFrame = self.frame.copy()
         cv2.drawContours(allContourFrame,contourL,-1,(255,255,0),-1)
-        #cv2.imshow("no filtering - all contours shown", allContourFrame)
+
 
         # getting big contours  
         bigcontours = []
@@ -122,7 +122,7 @@ class Tracker(object):
         # drawing the big contours
         bigContourFrame = frame.copy() 
         cv2.drawContours(bigContourFrame, bigcontours,-1,(255,255,0),1)
-	#cv2.imshow("1st filter step - big contours", bigContourFrame)
+
 
 
         # getting most squarish looking contour
@@ -243,14 +243,15 @@ class Tracker(object):
 
     def writeDataFile(self, positions_proper, bigcontours):
             if positions_proper == {}:
-                positions_proper = {"1":"200.0","2":"300.0"}
+                positions_proper = {"1":[[12345,12345],50], "2":[[12345, 12345], 50]}
 
             if self.counter == 1:
                 string = ">"
             elif self.counter > 1:
                 string = ">>"
             else:
-                raise ValueError("self.counter is less than 1") 
+                raise ValueError("self.counter is less than 1")
+
 
             for i in positions_proper:
                 coordinatesL = positions_proper[i][0]
@@ -266,7 +267,7 @@ class Tracker(object):
             os.system("echo %s %s csv.csv" % (len(bigcontours),string))
 
         
-
+    # this function is broken. don't use it
     def writeSingleContourVideos(self):
         if self.counter < 600 and len(bigcontours) ==1:
             if not self.previousIsOne:
