@@ -148,7 +148,7 @@ class Tracker(object):
         positions = self.getPositions(bigcontours)
         positions_and_areas = []
         for i in zip(positions, contourAreas):
-            positions_and_areas.append(i[0],i[1].i[2])
+            positions_and_areas.append((i[0][0],i[0][1],i[1]))
 
         # conditional block. Testing if 1 or 2 contours found
         positions_proper = {}
@@ -191,7 +191,7 @@ class Tracker(object):
 
         print positions
         # Images to show.
-        if self.counter > 700:
+        if self.counter > 0:
             imagesToShowL = [
                    frame,
                    self.gray,
@@ -245,7 +245,7 @@ class Tracker(object):
 
     def writeDataFile(self, positions_proper, bigcontours):
             if positions_proper == {}:
-                positions_proper = {"1":[[12345,12345],50], "2":[[12345, 12345], 50]}
+                positions_proper = {"1":[12345,12345,50], "2":[12345, 12345, 50]}
 
             if self.counter == 1:
                 string = ">"
@@ -253,7 +253,6 @@ class Tracker(object):
                 string = ">>"
             else:
                 raise ValueError("self.counter is less than 1")
-
 
             for i in positions_proper:
                 coordinatesL = positions_proper[i][:2]
