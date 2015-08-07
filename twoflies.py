@@ -4,10 +4,12 @@ import pdb
 import numpy as np 
 import operator
 import os
+import configurations
 ee = execfile
 
+
 class Tracker(object):
-    def __init__(self, frame, num_of_flies=1, tubeNumber = 1):
+    def __init__(self, frame, writeData=False, num_of_flies=1, tubeNumber = 1):
         self.tubeNumber = tubeNumber 
         self.frame = frame
         self.gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
@@ -24,13 +26,13 @@ class Tracker(object):
         self.previousIsOne = False 
         self.fourcc = None 
         self.out = None 
-        self.speed = 7 
-        #self.printOut = open("csv.csv","w") 
+        self.speed = 7
+        self.writeData = writeData
         self.writing = False
         self.contourVideoName = "output_short_collisions_correct.avi"
         self.collisionLength = 0
         self.contourImgDir = "contour_imgs"
-        self.rawImgDir = "raw_imgs"
+        self.rawImgDir = configurations.raw_imgs_dir
 
     def writeAllVideo(self, bigContourFrame):
         if self.counter < 1500:
@@ -208,7 +210,7 @@ class Tracker(object):
 
         self.writeAllVideo(bigContourFrame);
 
-        self.writeDataFile(positions_proper, bigcontours);
+        if self.writeData: self.writeDataFile(positions_proper, bigcontours)
 
         self.writeContourImages(self.stitchImages([bigContourFrame]))
 
