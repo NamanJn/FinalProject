@@ -104,11 +104,13 @@ class Tracker(object):
 
         # getting big contours  
         bigcontours = []
+        contourAreas = []
         for contourItem in contourL:
             contourArea = cv2.contourArea(contourItem)
             print "contourArea is ,", contourArea
             if 30 < contourArea < 700:
-                bigcontours.append(contourItem) 
+                bigcontours.append(contourItem)
+                contourAreas.append(contourArea)
         # This block is to prevent the losing of the contour
         # need to redo this
 
