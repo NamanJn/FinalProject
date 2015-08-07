@@ -11,14 +11,15 @@ ee = execfile
 import matplotlib.pyplot as plt
 import pdb
 poing = inspect.getabsfile(inspect.currentframe())
+from configurations import col_names
 
 file_path = os.path.join(validation_results_dir, results_file) 
 
 print file_path
 
-col_names = ['frame_number', 'fly', 'positionx', 'positiony']
 
-curated = pd.read_csv(file_path, names=col_names)
+curated = pd.read_csv(file_path, names=col_names[:4])
+
 generated = pd.read_csv("data_shortcoll.csv", names=col_names)
 
 xL = []

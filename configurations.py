@@ -24,4 +24,4 @@ raw_imgs_dir = "raw_imgs"
 
 
 # data set column names
-col_names = ['frame_number', 'fly', 'positionx', 'positiony']
+col_names = ['frame_number', 'fly', 'positionx', 'positiony','area']
