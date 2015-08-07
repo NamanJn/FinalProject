@@ -146,34 +146,35 @@ class Tracker(object):
 
         # getting the positions of the flies 
         positions = self.getPositions(bigcontours)
-         
-        
+        positions_and_areas = zip(positions, contourAreas)
+
         # conditional block. Testing if 1 or 2 contours found
         positions_proper = {}
 
         if len(positions) >= 2:
 
             if self.collisionLength > 10:
-                for index, item in enumerate(positions):
+                for index, item in enumerate(positions_and_areas):
                     self.positionsD[index+1] = item
                     positions_proper = self.positionsD
 
             else:
                 for fly_id in self.positionsD: 
-                    fly_coordinate = self.positionsD[fly_id]
+                    fly_coordinate = self.positionsD[fly_id][0]
                     distances = [ sum((np.array(fly_coordinate) - np.array(i))**2) for i in positions ]
                     min_index = distances.index(min(distances))
-                    positions_proper[fly_id] = positions[min_index]
+                    positions_proper[fly_id] = positions_and_areas[min_index]
                     print "distances are ", distances
                     print min_index
 
             #print distances
             rawImg = frame.copy()
-            for fly_id, fly_coordinate in positions_proper.iteritems():
+            for fly_id, fly_features in positions_proper.iteritems():
+                x_coordinate = fly_features[0][0]
                 for image in [bigContourFrame, rawImg]:
                     cv2.putText(image,
                             str(fly_id),
-                            (fly_coordinate[0],18),
+                            (x_coordinate, 18),
                             cv2.FONT_HERSHEY_SIMPLEX,
                             0.75,
                             (255,255,255))
@@ -252,10 +253,14 @@ class Tracker(object):
                 raise ValueError("self.counter is less than 1") 
 
             for i in positions_proper:
-                os.system("echo '%s,fly%s,%s,%s' %s data_shortcoll.csv" % (self.counter, 
+                coordinatesL = positions_proper[i][0]
+                area = positions_proper[i][1]
+
+                os.system("echo '%s,fly%s,%s,%s,%s' %s data_shortcoll.csv" % (self.counter,
                     i,
-                    positions_proper[i][0], 
-                    positions_proper[i][1], 
+                    coordinatesL[0],
+                    coordinatesL[1],
+                    area,
                     string))
 
             os.system("echo %s %s csv.csv" % (len(bigcontours),string))
