@@ -146,7 +146,9 @@ class Tracker(object):
 
         # getting the positions of the flies 
         positions = self.getPositions(bigcontours)
-        positions_and_areas = zip(positions, contourAreas)
+        positions_and_areas = []
+        for i in zip(positions, contourAreas):
+            positions_and_areas.append(i[0],i[1].i[2])
 
         # conditional block. Testing if 1 or 2 contours found
         positions_proper = {}
@@ -160,7 +162,7 @@ class Tracker(object):
 
             else:
                 for fly_id in self.positionsD: 
-                    fly_coordinate = self.positionsD[fly_id][0]
+                    fly_coordinate = self.positionsD[fly_id][:2]
                     distances = [ sum((np.array(fly_coordinate) - np.array(i))**2) for i in positions ]
                     min_index = distances.index(min(distances))
                     positions_proper[fly_id] = positions_and_areas[min_index]
@@ -170,7 +172,7 @@ class Tracker(object):
             #print distances
             rawImg = frame.copy()
             for fly_id, fly_features in positions_proper.iteritems():
-                x_coordinate = fly_features[0][0]
+                x_coordinate = fly_features[0]
                 for image in [bigContourFrame, rawImg]:
                     cv2.putText(image,
                             str(fly_id),
@@ -253,8 +255,8 @@ class Tracker(object):
                 raise ValueError("self.counter is less than 1") 
 
             for i in positions_proper:
-                coordinatesL = positions_proper[i][0]
-                area = positions_proper[i][1]
+                coordinatesL = positions_proper[i][:2]
+                area = positions_proper[i][2]
 
                 os.system("echo '%s,fly%s,%s,%s,%s' %s data_shortcoll.csv" % (self.counter,
                     i,
