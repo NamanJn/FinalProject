@@ -36,6 +36,7 @@ class Tracker(object):
         self.rawImgDir = configurations.raw_imgs_dir
         self.maxFlyGrayScaleValue = 115
 
+
     def writeAllVideo(self, bigContourFrame):
         if self.counter < 1500:
                 if not self.writing:
@@ -270,7 +271,7 @@ class Tracker(object):
 
     def writeDataFile(self, positions_proper, bigcontours):
             if positions_proper == {}:
-                positions_proper = {"1":[12345,12345,50], "2":[12345, 12345, 50]}
+                positions_proper = {"1":[12345,12345,50, 50], "2":[12345, 12345, 50, 50]}
 
             if self.counter == 1:
                 string = ">"
@@ -282,15 +283,17 @@ class Tracker(object):
             for i in positions_proper:
                 coordinatesL = positions_proper[i][:2]
                 area = positions_proper[i][2]
+                grayscale_value = positions_proper[i][3]
 
-                os.system("echo '%s,fly%s,%s,%s,%s' %s data_shortcoll.csv" % (self.counter,
+                os.system("echo '%s,fly%s,%s,%s,%s,%s' %s data_shortcoll.csv" % (self.counter,
                     i,
                     coordinatesL[0],
                     coordinatesL[1],
                     area,
+                    grayscale_value,
                     string))
 
-            os.system("echo %s %s csv.csv" % (len(bigcontours),string))
+            os.system("echo %s %s csv.csv" % (len(bigcontours), string))
 
         
     # this function is broken. don't use it
