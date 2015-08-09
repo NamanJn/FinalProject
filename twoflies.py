@@ -133,8 +133,6 @@ class Tracker(object):
         #nonBackgroundContourL
 
 
-
-
         #print "mean_value,", mean_val
 
         # getting most squarish looking contour
@@ -156,11 +154,19 @@ class Tracker(object):
         #    cv2.drawContours(frame_with_square_contour, squarishcontourL,-1,(255,255,0),1)
 	#    #cv2.imshow("2nd filter step - squarish", frame_with_square_contour)
 
-        # getting the positions of the flies 
-        positions = self.getPositions(bigcontours)
+        # getting the positions of the flies
+
+        bigAndFlyContours = [ i[1] for i in fly_mean_and_contour_and_contourAreas]
+        bigAndFlyContourAreas = [ i[2] for i in fly_mean_and_contour_and_contourAreas]
+        bigAndFlyMean = [ i[2] for i in fly_mean_and_contour_and_contourAreas]
+
+        bigAndOnlyFlyContourFrame = frame.copy()
+        cv2.drawContours(bigAndOnlyFlyContourFrame , bigAndFlyContours,-1,(255,255,0),1)
+
+        positions = self.getPositions(bigAndFlyContours)
         positions_and_areas = []
-        for i in zip(positions, contourAreas):
-            positions_and_areas.append((i[0][0],i[0][1],i[1]))
+        for i in zip(positions, bigAndFlyContourAreas, bigAndFlyMean):
+            positions_and_areas.append((i[0][0], i[0][1], i[1], i[2]))
 
         # conditional block. Testing if 1 or 2 contours found
         positions_proper = {}
@@ -169,7 +175,7 @@ class Tracker(object):
             if self.collisionLength > self.fps * 0.4:
                 for index, item in enumerate(positions_and_areas):
                     self.positionsD[index+1] = item
-                    positions_proper = self.positionsD
+                positions_proper = self.positionsD
 
             else:
                 for fly_id in self.positionsD: 
@@ -184,7 +190,7 @@ class Tracker(object):
             rawImg = frame.copy()
             for fly_id, fly_features in positions_proper.iteritems():
                 x_coordinate = fly_features[0]
-                for image in [bigContourFrame, rawImg]:
+                for image in [bigContourFrame, rawImg, bigAndOnlyFlyContourFrame]:
                     cv2.putText(image,
                             str(fly_id),
                             (x_coordinate, 18),
@@ -209,7 +215,8 @@ class Tracker(object):
                    self.diff,
                    self.binary,
                    allContourFrame,
-                   bigContourFrame
+                   bigContourFrame,
+                   bigAndOnlyFlyContourFrame
                     ]
             imagesToShowL += maskedL
             stitched = self.stitchImages(imagesToShowL)
@@ -230,7 +237,7 @@ class Tracker(object):
         test_masked = 100
         if self.counter % test_masked == 0: pdb.set_trace()
 
-        if len(positions) >= 3:
+        if len(bigcontours) >= 3:
             pdb.set_trace()
         print '----------------------'
         return positions
