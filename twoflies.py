@@ -127,6 +127,21 @@ class Tracker(object):
         cv2.drawContours(bigContourFrame, bigcontours,-1,(255,255,0),1)
 
 
+        mean_valuesL  = []
+        masked = np.zeros(self.gray.shape,np.uint8)
+        print len(bigcontours)
+        test_masked = 100
+        if self.counter > test_masked:
+            cv2.drawContours(masked,bigcontours,0,(255,255,0),-1)
+        else:
+            cv2.drawContours(masked, bigcontours, -1, (255, 255, 0), -1)
+        pixelpoints = np.transpose(np.nonzero(masked))
+        mean_val = cv2.mean(self.gray, mask = masked)
+        #mean_val = np.mean(pixelpoints)
+
+
+
+        #print "mean_value,", mean_val
 
         # getting most squarish looking contour
         # no need for this step if there is only 1 contour.
@@ -200,7 +215,8 @@ class Tracker(object):
                    self.diff,
                    self.binary,
                    allContourFrame,
-                   bigContourFrame
+                   bigContourFrame,
+                   masked
                     ]
             stitched = self.stitchImages(imagesToShowL)
 
@@ -215,6 +231,8 @@ class Tracker(object):
         self.writeContourImages(self.stitchImages([bigContourFrame]))
 
 
+
+        if self.counter > test_masked:pdb.set_trace()
 
         if len(positions) >= 3:
             pdb.set_trace()
