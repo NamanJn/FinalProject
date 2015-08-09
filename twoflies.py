@@ -34,6 +34,7 @@ class Tracker(object):
         self.collisionLength = 0
         self.contourImgDir = "contour_imgs"
         self.rawImgDir = configurations.raw_imgs_dir
+        self.maxFlyGrayScaleValue = 115
 
     def writeAllVideo(self, bigContourFrame):
         if self.counter < 1500:
@@ -114,6 +115,8 @@ class Tracker(object):
             if 30 < contourArea < 700:
                 bigcontours.append(contourItem)
                 contourAreas.append(contourArea)
+        bigContourFrame = frame.copy()
+        cv2.drawContours(bigContourFrame, bigcontours,-1,(255,255,0),1)
         # This block is to prevent the losing of the contour
         # need to redo this
 
@@ -123,21 +126,12 @@ class Tracker(object):
         #    bigcontours = self.previousContour[:]
 
         # drawing the big contours
-        bigContourFrame = frame.copy() 
-        cv2.drawContours(bigContourFrame, bigcontours,-1,(255,255,0),1)
 
 
-        mean_valuesL  = []
-        masked = np.zeros(self.gray.shape,np.uint8)
-        print len(bigcontours)
-        test_masked = 100
-        if self.counter > test_masked:
-            cv2.drawContours(masked,bigcontours,0,(255,255,0),-1)
-        else:
-            cv2.drawContours(masked, bigcontours, -1, (255, 255, 0), -1)
-        pixelpoints = np.transpose(np.nonzero(masked))
-        mean_val = cv2.mean(self.gray, mask = masked)
-        #mean_val = np.mean(pixelpoints)
+        mean_valuesL, maskedL, fly_mean_and_contour_and_contourAreas = self.getOnlyFlyContourAndMean(bigcontours, contourAreas)
+
+        #nonBackgroundContourL
+
 
 
 
@@ -208,23 +202,24 @@ class Tracker(object):
 
         print positions
         # Images to show.
-        if self.counter > 0:
+        if self.counter > 0: # don't get rid of this
             imagesToShowL = [
                    frame,
                    self.gray,
                    self.diff,
                    self.binary,
                    allContourFrame,
-                   bigContourFrame,
-                   masked
+                   bigContourFrame
                     ]
+            imagesToShowL += maskedL
             stitched = self.stitchImages(imagesToShowL)
 
-            # adding key handlers and showign the stiched image
+            # adding key handlers and showign the stitched image
             cv2.imshow("stitched", stitched)
+
         self.addKeyHandlers()
 
-        self.writeAllVideo(bigContourFrame);
+        self.writeAllVideo(bigContourFrame)
 
         if self.writeData: self.writeDataFile(positions_proper, bigcontours)
 
@@ -232,7 +227,8 @@ class Tracker(object):
 
 
 
-        if self.counter > test_masked:pdb.set_trace()
+        test_masked = 100
+        if self.counter % test_masked == 0: pdb.set_trace()
 
         if len(positions) >= 3:
             pdb.set_trace()
@@ -252,7 +248,7 @@ class Tracker(object):
             cx = int(M['m10']/M['m00'])
             cy = int(M['m01']/M['m00'])
 
-            positions.append([cx,cy])   
+            positions.append([cx, cy])
         return positions 
 
     def addKeyHandlers(self):
@@ -263,7 +259,7 @@ class Tracker(object):
             self.speed = 7
 
         elif cv2.waitKey(self.speed) == ord("s"):
-            self.speed = 100 
+            self.speed = 100
 
     def writeDataFile(self, positions_proper, bigcontours):
             if positions_proper == {}:
@@ -356,3 +352,27 @@ class Tracker(object):
                 interpolation = cv2.INTER_CUBIC)
         return stitched_double
 
+
+    def getOnlyFlyContourAndMean(self, bigcontours,contourAreas):
+        mean_valuesL  = []
+        maskedL = []
+        if len(bigcontours) == 0:
+            maskedL = [np.zeros(self.gray.shape,np.uint8)]
+
+
+        for index, bigcontourNP in enumerate(bigcontours):
+
+            masked = np.zeros(self.gray.shape, np.uint8)
+            print len(bigcontours)
+            cv2.drawContours(masked, bigcontours, index, (255, 255, 0), -1)
+
+            pixelpoints = np.transpose(np.nonzero(masked))
+            mean_val = cv2.mean(self.gray, mask = masked)
+            mean_valuesL.append(mean_val)
+            maskedL.append(masked)
+
+        print mean_valuesL
+
+        fly_mean_and_contour = [item for index, item in enumerate(zip(mean_valuesL, bigcontours, contourAreas)) if item[0][0] < self.maxFlyGrayScaleValue]
+
+        return mean_valuesL, maskedL, fly_mean_and_contour
