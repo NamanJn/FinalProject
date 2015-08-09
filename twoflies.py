@@ -34,7 +34,7 @@ class Tracker(object):
         self.collisionLength = 0
         self.contourImgDir = "contour_imgs"
         self.rawImgDir = configurations.raw_imgs_dir
-        self.maxFlyGrayScaleValue = 115
+        self.maxFlyGrayScaleValue = 117
 
 
     def writeAllVideo(self, bigContourFrame):
@@ -231,11 +231,11 @@ class Tracker(object):
 
         if self.writeData: self.writeDataFile(positions_proper, bigcontours)
 
-        self.writeContourImages(self.stitchImages([bigContourFrame]))
+        self.writeContourImages(self.stitchImages([bigAndOnlyFlyContourFrame]))
 
 
 
-        test_masked = 100
+        test_masked = 300
         if self.counter % test_masked == 0: pdb.set_trace()
 
         if len(bigcontours) >= 3:
