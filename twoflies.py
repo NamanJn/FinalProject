@@ -35,7 +35,7 @@ class Tracker(object):
         self.contourImgDir = "contour_imgs"
         self.rawImgDir = configurations.raw_imgs_dir
         self.maxFlyGrayScaleValue = 117
-
+        self.alpha = 0.0005
 
     def writeAllVideo(self, bigContourFrame):
         if self.counter < 1500:
@@ -60,27 +60,27 @@ class Tracker(object):
         """
         self.counter += 1
         print self.counter
+
+
         self.frame = frame.copy()
 
+        # converting frame to grayscale
         cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY,dst=self.gray)
-
         gray_float = self.gray.astype("float32")
 
         # drawing the binary threshold image without running average
-        cv2.threshold(src=self.gray,
-                thresh=80,
-                maxval=255,
-                type=cv2.THRESH_BINARY_INV,
-                dst=self.binary_without_running_average)
+        # cv2.threshold(src=self.gray,
+        #         thresh=80,
+        #         maxval=255,
+        #         type=cv2.THRESH_BINARY_INV,
+        #         dst=self.binary_without_running_average)
 
-
-
-        # getting the acummulator average
-        cv2.accumulateWeighted(src=gray_float,dst=self.accumulator,alpha=0.0005)
+        # getting the acumulator average
+        cv2.accumulateWeighted(src=gray_float, dst=self.accumulator, alpha=self.alpha)
         accumulator_int = self.accumulator.astype("uint8")
 
         #getting the diffs
-        cv2.subtract(src1=accumulator_int, src2=self.gray, dst = self.diff)
+        cv2.subtract(src1=accumulator_int, src2=self.gray, dst=self.diff)
 
 
 
