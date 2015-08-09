@@ -144,16 +144,9 @@ class Tracker(object):
 
         #    squarishcontourL = self.getSquarishContour(bigcontours,draw=False)
 
-        #    masked = np.zeros(self.gray.shape,np.uint8)     
-        #    cv2.drawContours(masked,bigcontours,-1,(255,255,0),-1)
-        #    pixelpoints = np.transpose(np.nonzero(masked))
-        #    mean_val = cv2.mean(self.gray,mask = masked)
-        #    print "mean_value,", mean_val
-        #    #cv2.imshow("mask", masked) 
-
         #    frame_with_square_contour= self.frame.copy()
         #    cv2.drawContours(frame_with_square_contour, squarishcontourL,-1,(255,255,0),1)
-	#    #cv2.imshow("2nd filter step - squarish", frame_with_square_contour)
+	    #cv2.imshow("2nd filter step - squarish", frame_with_square_contour)
 
         # getting the positions of the flies
 
@@ -162,12 +155,20 @@ class Tracker(object):
         bigAndFlyMean = [ i[2] for i in fly_mean_and_contour_and_contourAreas]
 
         bigAndOnlyFlyContourFrame = frame.copy()
-        cv2.drawContours(bigAndOnlyFlyContourFrame , bigAndFlyContours,-1,(255,255,0),1)
+        cv2.drawContours(bigAndOnlyFlyContourFrame, bigAndFlyContours,-1,(255,255,0),1)
+
+        # getting width of contours
+        boundingRectFrame = bigContourFrame.copy()
+        widthsL = [50]
+        if len(bigAndFlyContours) >= 2:
+            print len(bigAndFlyContours)
+            boundingRectFrame, widthsL = self.getWidthOfContours(bigAndFlyContours, bigContourFrame)
+
 
         positions = self.getPositions(bigAndFlyContours)
         positions_and_areas = []
-        for i in zip(positions, bigAndFlyContourAreas, bigAndFlyMean):
-            positions_and_areas.append((i[0][0], i[0][1], i[1], i[2]))
+        for i in zip(positions, bigAndFlyContourAreas, bigAndFlyMean,widthsL):
+            positions_and_areas.append((i[0][0], i[0][1], i[1], i[2],i[3]))
 
         # conditional block. Testing if 1 or 2 contours found
         positions_proper = {}
@@ -217,8 +218,10 @@ class Tracker(object):
                    self.binary,
                    allContourFrame,
                    bigContourFrame,
-                   bigAndOnlyFlyContourFrame
+                   bigAndOnlyFlyContourFrame,
+                   boundingRectFrame
                     ]
+
             imagesToShowL += maskedL
             stitched = self.stitchImages(imagesToShowL)
 
@@ -271,7 +274,7 @@ class Tracker(object):
 
     def writeDataFile(self, positions_proper, bigcontours):
             if positions_proper == {}:
-                positions_proper = {"1":[12345,12345,50, 50], "2":[12345, 12345, 50, 50]}
+                positions_proper = {"1":[12345, 12345, 50, 50, 50], "2":[12345, 12345, 50, 50, 50]}
 
             if self.counter == 1:
                 string = ">"
@@ -284,13 +287,15 @@ class Tracker(object):
                 coordinatesL = positions_proper[i][:2]
                 area = positions_proper[i][2]
                 grayscale_value = positions_proper[i][3]
+                width = positions_proper[i][4]
 
-                os.system("echo '%s,fly%s,%s,%s,%s,%s' %s data_shortcoll.csv" % (self.counter,
+                os.system("echo '%s,fly%s,%s,%s,%s,%s,%s' %s data_shortcoll.csv" % (self.counter,
                     i,
                     coordinatesL[0],
                     coordinatesL[1],
                     area,
                     grayscale_value,
+                    width,
                     string))
 
             os.system("echo %s %s csv.csv" % (len(bigcontours), string))
@@ -386,3 +391,20 @@ class Tracker(object):
         fly_mean_and_contour = [item for index, item in enumerate(zip(mean_valuesL, bigcontours, contourAreas)) if item[0][0] < self.maxFlyGrayScaleValue]
 
         return mean_valuesL, maskedL, fly_mean_and_contour
+
+    def getWidthOfContours(self, contourL, contourFrame):
+
+        im = contourFrame.copy()
+        widthsL = []
+
+        for cnt in contourL:
+            rect = cv2.minAreaRect(cnt)
+            width = rect[1][1]
+            widthsL.append(width)
+
+            box = cv2.cv.BoxPoints(rect)
+
+
+            box = np.int0(box)
+            cv2.drawContours(im, [box], -1, (0, 0, 255),1)
+        return im, widthsL
