@@ -152,7 +152,7 @@ class Tracker(object):
 
         bigAndFlyContours = [ i[1] for i in fly_mean_and_contour_and_contourAreas]
         bigAndFlyContourAreas = [ i[2] for i in fly_mean_and_contour_and_contourAreas]
-        bigAndFlyMean = [ i[2] for i in fly_mean_and_contour_and_contourAreas]
+        bigAndFlyMean = [ i[0][0] for i in fly_mean_and_contour_and_contourAreas]
 
         bigAndOnlyFlyContourFrame = frame.copy()
         cv2.drawContours(bigAndOnlyFlyContourFrame, bigAndFlyContours,-1,(255,255,0),1)
@@ -168,7 +168,7 @@ class Tracker(object):
         positions = self.getPositions(bigAndFlyContours)
         positions_and_areas = []
         for i in zip(positions, bigAndFlyContourAreas, bigAndFlyMean,widthsL):
-            positions_and_areas.append((i[0][0], i[0][1], i[1], i[2],i[3]))
+            positions_and_areas.append((i[0][0], i[0][1], i[1], i[2], i[3]))
 
         # conditional block. Testing if 1 or 2 contours found
         positions_proper = {}
@@ -180,6 +180,7 @@ class Tracker(object):
                 positions_proper = self.positionsD
 
             else:
+                distancesL = []
                 for fly_id in self.positionsD: 
                     fly_coordinate = self.positionsD[fly_id][:2]
                     distances = [ sum((np.array(fly_coordinate) - np.array(i))**2) for i in positions ]
@@ -187,6 +188,7 @@ class Tracker(object):
                     positions_proper[fly_id] = positions_and_areas[min_index]
                     print "distances are ", distances
                     print min_index
+                    distancesL.append(distances)
 
             #print distances
             rawImg = frame.copy()
@@ -289,7 +291,8 @@ class Tracker(object):
                 grayscale_value = positions_proper[i][3]
                 width = positions_proper[i][4]
 
-                os.system("echo '%s,fly%s,%s,%s,%s,%s,%s' %s data_shortcoll.csv" % (self.counter,
+                os.system("echo '%s,fly%s,%s,%s,%s,%s,%s' %s data_shortcoll.csv" % (
+                    self.counter,
                     i,
                     coordinatesL[0],
                     coordinatesL[1],
