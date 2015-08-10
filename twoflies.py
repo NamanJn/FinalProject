@@ -6,7 +6,7 @@ import operator
 import os
 import configurations
 ee = execfile
-
+import operator
 
 class Tracker(object):
     def __init__(self, frame, tubeNumber, fps, writeData=False, num_of_flies=1 ):
@@ -181,6 +181,7 @@ class Tracker(object):
 
             else:
                 distancesL = []
+                firstIndex= None
                 for fly_id in self.positionsD: 
                     fly_coordinate = self.positionsD[fly_id][:2]
                     distances = [ sum((np.array(fly_coordinate) - np.array(i))**2) for i in positions ]
@@ -189,6 +190,16 @@ class Tracker(object):
                     print "distances are ", distances
                     print min_index
                     distancesL.append(distances)
+
+                    if min_index == firstIndex:
+                        values = [distanceI[min_index] for distanceI in distancesL]
+                        min_distance_index, min_value = min(enumerate(values), key=operator.itemgetter(1))
+                        other_index = (min_index + 1) % 2
+                        other_min_distance_index = (min_distance_index + 1 ) % 2 + 1
+                        positions_proper[other_min_distance_index] = positions_and_areas[other_index]
+
+                        pdb.set_trace()
+                    firstIndex = min_index
 
             #print distances
             rawImg = frame.copy()
