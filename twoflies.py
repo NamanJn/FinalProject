@@ -59,7 +59,7 @@ class Tracker(object):
         returns moments (center) of contours
         """
         self.counter += 1
-        print self.counter
+        if self.counter % 500 == 0: print self.counter
 
 
         self.frame = frame.copy()
@@ -99,7 +99,7 @@ class Tracker(object):
                     mode=cv2.RETR_EXTERNAL,
                     method=cv2.CHAIN_APPROX_SIMPLE)
 
-        print "Length of all contours ",len(contourL)
+        #print "Length of all contours ",len(contourL)
 
 
         # drawing all contours 
@@ -112,7 +112,7 @@ class Tracker(object):
         contourAreas = []
         for contourItem in contourL:
             contourArea = cv2.contourArea(contourItem)
-            print "contourArea is ,", contourArea
+            #print "contourArea is ,", contourArea
             if 30 < contourArea < 700:
                 bigcontours.append(contourItem)
                 contourAreas.append(contourArea)
@@ -161,7 +161,7 @@ class Tracker(object):
         boundingRectFrame = bigContourFrame.copy()
         widthsL = [50]
         if len(bigAndFlyContours) >= 2:
-            print len(bigAndFlyContours)
+            #print len(bigAndFlyContours)
             boundingRectFrame, widthsL = self.getWidthOfContours(bigAndFlyContours, bigContourFrame)
 
 
@@ -187,8 +187,8 @@ class Tracker(object):
                     distances = [ sum((np.array(fly_coordinate) - np.array(i))**2) for i in positions ]
                     min_index = distances.index(min(distances))
                     positions_proper[fly_id] = positions_and_areas[min_index]
-                    print "distances are ", distances
-                    print min_index
+                    #print "distances are ", distances
+                    #print min_index
                     distancesL.append(distances)
 
                     if min_index == firstIndex:
@@ -198,7 +198,7 @@ class Tracker(object):
                         other_min_distance_index = (min_distance_index + 1 ) % 2 + 1
                         positions_proper[other_min_distance_index] = positions_and_areas[other_index]
 
-                        pdb.set_trace()
+                        #pdb.set_trace()
                     firstIndex = min_index
 
             #print distances
@@ -212,7 +212,7 @@ class Tracker(object):
                             cv2.FONT_HERSHEY_SIMPLEX,
                             0.75,
                             (255,255,255))
-            print "This is the positions_proper", positions_proper
+            #print "This is the positions_proper", positions_proper
             self.positionsD = positions_proper
             self.collisionLength = 0
 
@@ -221,9 +221,9 @@ class Tracker(object):
             self.collisionLength += 1
 
 
-        print positions
+        #print positions
         # Images to show.
-        if self.counter > 0: # don't get rid of this
+        if self.counter < 0: # don't get rid of this
             imagesToShowL = [
                    frame,
                    self.gray,
@@ -241,7 +241,7 @@ class Tracker(object):
             # adding key handlers and showign the stitched image
             cv2.imshow("stitched", stitched)
 
-        self.addKeyHandlers()
+            self.addKeyHandlers()
 
         self.writeAllVideo(bigContourFrame)
 
@@ -251,12 +251,12 @@ class Tracker(object):
 
 
 
-        test_masked = 300
-        if self.counter % test_masked == 0: pdb.set_trace()
+        # test_masked = 300
+        # if self.counter % test_masked == 0: pdb.set_trace()
 
-        if len(bigcontours) >= 3:
-            pdb.set_trace()
-        print '----------------------'
+        # if len(bigcontours) >= 3:
+        #     pdb.set_trace()
+        #print '----------------------'
         return positions
 
     def writeRawImagesWithNumbers(self, image):
@@ -392,7 +392,7 @@ class Tracker(object):
         for index, bigcontourNP in enumerate(bigcontours):
 
             masked = np.zeros(self.gray.shape, np.uint8)
-            print len(bigcontours)
+            #print len(bigcontours)
             cv2.drawContours(masked, bigcontours, index, (255, 255, 0), -1)
 
             pixelpoints = np.transpose(np.nonzero(masked))
@@ -400,7 +400,7 @@ class Tracker(object):
             mean_valuesL.append(mean_val)
             maskedL.append(masked)
 
-        print mean_valuesL
+        #print mean_valuesL
 
         fly_mean_and_contour = [item for index, item in enumerate(zip(mean_valuesL, bigcontours, contourAreas)) if item[0][0] < self.maxFlyGrayScaleValue]
 

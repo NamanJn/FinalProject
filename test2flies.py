@@ -33,7 +33,7 @@ if configurations.fps != fps:
 ret, frame = cap.read()
 frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
 # initialising the tracker function.
-tracker = Tracker(frameROI,fps=fps, num_of_flies=2, tubeNumber = tube_number)
+tracker = Tracker(frameROI,writeData=True, fps=fps, num_of_flies=2, tubeNumber = tube_number)
 
 frame_shape = frameROI.shape
 write_video = False 
@@ -47,7 +47,7 @@ while True:
 	ret, frame = cap.read()
 
 	counter +=1
-	print counter 
+	#print counter
 
         frameROI = frame[tube_y:tube_y+tube_height,tube_x:tube_x+tube_length]
 
