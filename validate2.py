@@ -11,6 +11,7 @@ import cv2
 import pdb
 import os
 #from twoflies import Tracker
+from configurations import validation_results_dir
 import re
 import docopt
 # This script's aim is to get input from a user
@@ -65,6 +66,7 @@ def playVideo(videoNameS):
 videoDirS = "collision_vids"
 videosL = os.listdir(videoDirS)
 videosL = sorted(videosL, key= lambda x: int(re.findall(r"collision(\d+)_", x)[0]))
+outputFilePathS = os.path.join(validation_results_dir, "identity.csv")
 pdb.set_trace()
 
 video_number = 0
@@ -108,7 +110,7 @@ while video_number < len(videosL):
                 print "ok didn't switch"
 
             video_number += 1
-            os.system("echo '%s,%s,%s' >> identity.csv" % (collisionFrame, x, currentUser) )
+            os.system("echo '%s,%s,%s' >> %s" % (collisionFrame, x, currentUser, outputFilePathS) )
             break 
         elif x == "r":
             print "playing again chosen.... press a to continue"
