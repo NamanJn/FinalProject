@@ -11,7 +11,7 @@ ee = execfile
 import matplotlib.pyplot as plt
 import pdb
 poing = inspect.getabsfile(inspect.currentframe())
-from configurations import col_names
+from configurations import col_names, data_dir
 
 file_path = os.path.join(validation_results_dir, results_file) 
 
@@ -19,8 +19,8 @@ print file_path
 
 
 curated = pd.read_csv(file_path, names=col_names[:4])
-
-generated = pd.read_csv("data_shortcoll.csv", names=col_names)
+generatedFilePathS = os.path.join(data_dir,"data_shortcoll.csv")
+generated = pd.read_csv(generatedFilePathS, names=col_names)
 
 xL = []
 curated_x = []

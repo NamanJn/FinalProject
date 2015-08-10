@@ -22,6 +22,9 @@ validation_results_dir = "validation_results"
 # raw images directory
 raw_imgs_dir = "raw_imgs"
 
+# data directory
+data_dir = "data"
 
 # data set column names
-col_names = ['frame_number', 'fly', 'positionx', 'positiony','area']
+col_names = ['frame_number', 'fly', 'positionx', 'positiony', 'area', 'grayscale', 'width']
+
