@@ -51,7 +51,10 @@ def plotWithBestFitLine(xL, yL):
 
     # plotting both scatter plot and linear regression
     plt.scatter(xL, yL)
-    plt.plot(xL, m*xL+b, '-')
+    plt.plot(xL, m*xL+b, '-r')
+    plt.xlabel("generated x-coordinates")
+    plt.ylabel("manually inspected x-coordinates    ")
+    plt.savefig("linreg.jpg")
     plt.show()
     return m, b
 

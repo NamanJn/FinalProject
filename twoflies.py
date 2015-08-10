@@ -39,8 +39,9 @@ class Tracker(object):
         self.data_dir = configurations.data_dir
         self.dataFilePathS = os.path.join(self.data_dir,"data_shortcoll.csv")
         self.test_rleFilePathS = os.path.join(self.data_dir,"csv.csv")
+        
     def writeAllVideo(self, bigContourFrame):
-        if self.counter < 1500:
+        if self.counter < 100000:
                 if not self.writing:
                     #self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
                     imageToWrite = self.stitchImages([bigContourFrame])
