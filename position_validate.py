@@ -15,11 +15,14 @@ if not os.path.isdir(validation_results_dir):
 
 class ImgListener(object):
 
-    def __init__(self):
+    def __init__(self, frame):
 
+        self.imageFrame = frame
         self.positionsL = []
         self.real_positionsL = []
         #self.imageNumber = imageNumber
+        cv2.namedWindow('image')
+        cv2.setMouseCallback('image', self.listen_for_click, param=2)
 
     def listen_for_click(self, event, x, y, flags, param):
         
@@ -32,30 +35,35 @@ class ImgListener(object):
             self.real_positionsL.append(coordinates)
             print "Now positions after halving is,", self.real_positionsL
 
+    def show(self):
+        cv2.imshow("image", self.imageFrame)
+
 
 if __name__ == "__main__":
 
-    frame_interval = 25 
-    for i in range(300, 1300, frame_interval):
+    counter = 0
+    frame_interval = 150
+    for i in range(300, 40000, frame_interval):
 
+        counter += 1
         img_nameS = "frame%s.png" % i
         print "image is %s" % img_nameS
         image_path = os.path.join(dir_path, img_nameS)
+
         if os.path.exists(image_path):
-            
+            print 'image path is', image_path
+            print 'reading image now'
             frame = cv2.imread(image_path)
         else:
             print img_nameS, 'does not exist'
             continue
 
-        listener = ImgListener()
-
-        # binding listener to the image
-        cv2.namedWindow('image')
-        cv2.setMouseCallback('image', listener.listen_for_click, param=2)
+        listener = ImgListener(frame)
 
         # showing the first image and waiting for 2 clicks
-        cv2.imshow("image", frame)
+        print 'showing image now'
+        listener.show()
+
         fileToWriteResults = os.path.join(validation_results_dir, results_file)
 
         print "press 's' to skip to next image"
