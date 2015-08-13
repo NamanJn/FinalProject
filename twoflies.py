@@ -39,7 +39,7 @@ class Tracker(object):
         self.data_dir = configurations.data_dir
         self.dataFilePathS = os.path.join(self.data_dir,"data_shortcoll.csv")
         self.test_rleFilePathS = os.path.join(self.data_dir,"csv.csv")
-        
+
     def writeAllVideo(self, bigContourFrame):
         if self.counter < 100000:
                 if not self.writing:
@@ -290,7 +290,8 @@ class Tracker(object):
 
     def writeDataFile(self, positions_proper, bigcontours):
             if positions_proper == {}:
-                positions_proper = {"1":[12345, 12345, 50, 50, 50], "2":[12345, 12345, 50, 50, 50]}
+                for i in ["1", "2"]:
+                    positions_proper[i] = [configurations.collision_value]*5
 
             if self.counter == 1:
                 string = ">"
