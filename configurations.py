@@ -28,3 +28,6 @@ data_dir = "data"
 # data set column names
 col_names = ['frame_number', 'fly', 'positionx', 'positiony', 'area', 'grayscale', 'width']
 
+# column values for collision rows
+collision_value = 50
+
