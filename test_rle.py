@@ -15,11 +15,11 @@ def myencode(string):
         if char == prev:
             count +=1
         else:
-            output.append([prev,count, counter - count])
+            output.append([prev,count, counter - count+1])
             count = 1
         prev = char
         counter += 1
-    output.append([prev,count,counter - count])
+    output.append([prev,count,counter - count+1])
     return output
 
 def readcsv(string):
@@ -78,7 +78,7 @@ def cutContourVideo(startFrame,length):
 def readAndCreateRle(string):
 
     rawString = readcsv(string)
-    
+
     rle = myencode(rawString)
 
     return rle
