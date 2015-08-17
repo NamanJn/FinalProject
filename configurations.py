@@ -14,6 +14,8 @@ fps = 10
 # contour images directory
 contour_images_dir = "contour_imgs"
 
+# corrected data directory
+corrected_data_dir = "corrected_data"
 
 # validation_results_directory
 validation_results_dir = "validation_results"
@@ -30,4 +32,5 @@ col_names = ['frame_number', 'fly', 'positionx', 'positiony', 'area', 'grayscale
 
 # column values for collision rows
 collision_value = 50
+
 

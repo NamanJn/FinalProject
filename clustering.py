@@ -20,11 +20,10 @@ generated = pd.read_csv(dataFilePathS, names=col_names)
 # getting non-collisions by filtering via the 'fly width' column
 nonCollisions = generated[generated.width != collision_value]
 
+
 feature_set = nonCollisions.iloc[:, 4:]
 
 km = KMeans(n_clusters=2)
 labels = km.fit(feature_set).labels_
-
-
 
 

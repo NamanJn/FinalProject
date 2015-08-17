@@ -75,6 +75,14 @@ def cutContourVideo(startFrame,length):
     #pdb.set_trace()
     os.system(stringToExecute)
 
+def readAndCreateRle(string):
+
+    rawString = readcsv(string)
+    
+    rle = myencode(rawString)
+
+    return rle
+
 if __name__ == "__main__":
     string = readcsv("csv.csv")
 
