@@ -51,7 +51,7 @@ class Tracker(object):
                     print imageToWrite.shape
                     fourcc = cv2.cv.CV_FOURCC(*'mp4v')
                     pdb.set_trace()
-                    self.out = cv2.VideoWriter(self.contourVideoName, fourcc, self.fps, (imageToWrite[0].shape[1], imageToWrite[0].shape[0]))
+                    self.out = cv2.VideoWriter(self.contourVideoName, fourcc, self.fps, (imageToWrite.shape[1], imageToWrite.shape[0]))
                     self.writing = True
                 else:
 
@@ -229,7 +229,7 @@ class Tracker(object):
 
         #print positions
         # Images to show.
-        imagesToShowL = [
+        imagesForVideoL = [
                frame,
                self.gray,
                self.diff,
@@ -240,7 +240,7 @@ class Tracker(object):
                boundingRectFrame
                 ]
 
-        imagesToShowL += maskedL
+        imagesToShowL = imagesForVideoL + maskedL
         stitched = self.stitchImages(imagesToShowL)
 
         if self.counter < 0: # don't get rid of this
@@ -248,7 +248,7 @@ class Tracker(object):
             cv2.imshow("stitched", stitched)
             self.addKeyHandlers()
 
-        if self.writeContourVideo: self.writeAllVideo(imagesToShowL)
+        if self.writeContourVideo: self.writeAllVideo(imagesForVideoL)
 
         if self.writeData: self.writeDataFile(positions_proper, bigcontours)
 
