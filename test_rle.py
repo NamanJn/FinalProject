@@ -4,7 +4,7 @@ ee = execfile
 poing = inspect.getabsfile(inspect.currentframe())
 import pdb
 import configurations
-
+from collections import Counter
 def myencode(string):
     
     prev = string[0]
@@ -128,6 +128,7 @@ if __name__ == "__main__":
     complex_collisionsL = [i for i in rle_intercollision if i[0] == True and i[1] > 1 ]
 
     # getting collisionStartFrame and collisionLength to start cutting the complex videos
+    collisionLengthsL = []
     for i in complex_collisionsL:
         firstInterCollision = twos[i[2]-1]
         lastInterCollision = twos[i[2]-1 + i[1]-1]
@@ -139,5 +140,10 @@ if __name__ == "__main__":
 
         collisionLength = endingCollision[2]+endingCollision[1] - startingCollision[2] + 1
         collisionStartFrame = startingCollision[2]
-        pdb.set_trace()
-        cutContourVideo(collisionStartFrame, collisionLength, configurations.complex_video_dir)
+
+        collisionLengthsL.append(collisionLength)
+        #cutContourVideo(collisionStartFrame, collisionLength, configurations.complex_video_dir)
+
+    collisionLengthsDistribution = Counter(collisionLengthsL)
+    print collisionLengthsDistribution
+    
