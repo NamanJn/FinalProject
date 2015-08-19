@@ -16,11 +16,13 @@ def myencode(string):
         if char == prev:
             count +=1
         else:
-            output.append([prev,count, counter - count+1])
+            outputSize = len(output)
+            output.append([prev,count, counter - count+1, outputSize])
             count = 1
         prev = char
         counter += 1
-    output.append([prev,count,counter - count+1])
+    outputSize = len(output)
+    output.append([prev,count,counter - count+1, outputSize])
     return output
 
 def readcsv(string):
@@ -56,22 +58,27 @@ def cutvideo(startFrame,length):
     os.system("ffmpeg -i cropped.mp4 -vf scale=1000:46 collision%s.mp4 -y" % startFrame)
 
 
-def cutContourVideo(startFrame,length):
+def cutContourVideo(startFrame, length, directory):
+
     # This is to cut the video from start-end time.
-    frame_rate = configurations.fps
-    buffer_time_before_collision = 0.1
-    buffer_time_after = 0.05
+    frame_rate = float(configurations.fps)
+    buffer_time_before_collision = 2
+    buffer_time_after = 0.1
     collision_start_time = startFrame/frame_rate
     collision_duration_time = length/frame_rate
 
     start_time = collision_start_time - buffer_time_before_collision #+ 500/frame_rate
-    
+
     print "start_time is ", start_time
-    end_time = collision_start_time + collision_duration_time  + buffer_time_after
+    end_time = collision_start_time + collision_duration_time + buffer_time_after
     print "the end_time is ", end_time
+    pdb.set_trace()
     #pdb.set_trace()
 
-    stringToExecute = "ffmpeg -i output1.avi -vf trim=%s:%s collision_vids/collision%s_withcontours.mp4 -y" %(start_time, end_time,startFrame)
+    stringToExecute = "ffmpeg -i output_multipleframes.avi -vf trim=%s:%s %s/collision%s_withcontours.mp4 -y" % (start_time,
+                                                                                                  end_time,
+                                                                                                  directory,
+                                                                                                  startFrame)
 
     #pdb.set_trace()
     os.system(stringToExecute)
@@ -94,7 +101,6 @@ def createComplexVideos():
 def createCollisionVideos():
 
     fileNameS = configurations.rle_data_file
-
     rle = readAndCreateRle(fileNameS)
 
     ones = [ i for i in rle if i[0] == "1" ]
@@ -102,7 +108,7 @@ def createCollisionVideos():
 
     #cutvideo(663, 8)
     # creating chunks of the videos.
-    for i, collisionLength, collisionStartFrame in ones:
+    for i, collisionLength, collisionStartFrame, index in ones:
         if collisionStartFrame > 300:
             cutContourVideo(collisionStartFrame, collisionLength)
 
@@ -125,5 +131,13 @@ if __name__ == "__main__":
     for i in complex_collisionsL:
         firstInterCollision = twos[i[2]-1]
         lastInterCollision = twos[i[2]-1 + i[1]-1]
-        startingCollision = None
-        endingCollision = None
+        startingCollision = rle[firstInterCollision[3]-1]
+        if lastInterCollision[3] + 1 == len(rle):
+            endingCollision = rle[lastInterCollision[3]-1]
+        else:
+            endingCollision = rle[lastInterCollision[3]+1]
+
+        collisionLength = endingCollision[2]+endingCollision[1] - startingCollision[2] + 1
+        collisionStartFrame = startingCollision[2]
+        pdb.set_trace()
+        cutContourVideo(collisionStartFrame, collisionLength, configurations.complex_video_dir)
