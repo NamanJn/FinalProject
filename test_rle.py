@@ -4,6 +4,7 @@ ee = execfile
 poing = inspect.getabsfile(inspect.currentframe())
 import pdb
 import configurations
+
 def myencode(string):
     
     prev = string[0]
@@ -78,21 +79,51 @@ def cutContourVideo(startFrame,length):
 def readAndCreateRle(string):
 
     rawString = readcsv(string)
+    rawString = rawString.replace("0", "1")
+    rawString = rawString.replace("3", "2")
+    rle = myencode(rawString) # replacing 0s with 1s.
 
-    rle = myencode(rawString)
 
     return rle
 
-if __name__ == "__main__":
-    string = readcsv("csv.csv")
 
-    rle = myencode(string.replace("0","1")) # replacing 0s with 1s.
+def createComplexVideos():
+    pass
+
+
+def createCollisionVideos():
+
+    fileNameS = configurations.rle_data_file
+
+    rle = readAndCreateRle(fileNameS)
+
     ones = [ i for i in rle if i[0] == "1" ]
     print ones
 
-    pdb.set_trace()
     #cutvideo(663, 8)
     # creating chunks of the videos.
-    for i,collisionLength,collisionStartFrame in ones:
+    for i, collisionLength, collisionStartFrame in ones:
         if collisionStartFrame > 300:
-            cutContourVideo(collisionStartFrame,collisionLength)
+            cutContourVideo(collisionStartFrame, collisionLength)
+
+
+if __name__ == "__main__":
+
+
+    rle = readAndCreateRle(configurations.rle_data_file)
+
+    ones = [ i for i in rle if i[0] == "1" ]
+    twos = [ i for i in rle if i[0] == "2" ]
+
+    intercollisionLength = map(lambda x: x[1] < 20, twos)
+    rle_intercollision = myencode(intercollisionLength)
+
+    # getting the positions of intercollision frames that are less than 20 frames
+    complex_collisionsL = [i for i in rle_intercollision if i[0] == True and i[1] > 1 ]
+
+    # getting collisionStartFrame and collisionLength to start cutting the complex videos
+    for i in complex_collisionsL:
+        firstInterCollision = twos[i[2]-1]
+        lastInterCollision = twos[i[2]-1 + i[1]-1]
+        startingCollision = None
+        endingCollision = None

@@ -1,4 +1,4 @@
-
+import os
 
 # cv2.imshow image size increase (x-axis) 
 width_multiple_to_increase = 2
@@ -27,6 +27,10 @@ raw_imgs_dir = "raw_imgs"
 # data directory
 data_dir = "data"
 
+# complex video directory
+
+complex_video_dir = "complex_collision_vids"
+
 # data set column names
 col_names = ['frame_number', 'fly', 'positionx', 'positiony', 'area', 'grayscale', 'width']
 
@@ -34,3 +38,5 @@ col_names = ['frame_number', 'fly', 'positionx', 'positiony', 'area', 'grayscale
 collision_value = 50
 
 
+# this file contains the data of the number of contours per frame.
+rle_data_file = os.path.join(data_dir, "csv.csv")
