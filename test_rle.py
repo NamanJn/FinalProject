@@ -112,6 +112,16 @@ def createCollisionVideos():
         if collisionStartFrame > 300:
             cutContourVideo(collisionStartFrame, collisionLength)
 
+def createVideoFromImages(startFrame, collisionLength, directory):
+
+    imageDirectory = configurations.contour_images_dir
+    fps = configurations.fps
+    stringToExecute = 'ffmpeg -start_number %s -framerate %s -i %s/frame%%d.png -vframes %s -vcodec mpeg4 testos.avi' % (startFrame,
+                                                                                                                       fps,
+                                                                                                                       imageDirectory,
+                                                                                                                       collisionLength)
+
+    os.system(stringToExecute)
 
 if __name__ == "__main__":
 
@@ -146,4 +156,4 @@ if __name__ == "__main__":
 
     collisionLengthsDistribution = Counter(collisionLengthsL)
     print collisionLengthsDistribution
-    
+
