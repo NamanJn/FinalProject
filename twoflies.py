@@ -31,15 +31,15 @@ class Tracker(object):
         self.writeData = writeData
         self.writeContourVideo = writeContourVideo
         self.writing = False
-        self.contourVideoName = "output_short_collisions_correct.avi"
+        self.contourVideoName = "output_multipleframes.avi"
         self.collisionLength = 0
         self.contourImgDir = "contour_imgs"
         self.rawImgDir = configurations.raw_imgs_dir
         self.maxFlyGrayScaleValue = 117
         self.alpha = 0.0005
         self.data_dir = configurations.data_dir
-        self.dataFilePathS = os.path.join(self.data_dir,"data_shortcoll.csv")
-        self.test_rleFilePathS = os.path.join(self.data_dir,"csv.csv")
+        self.dataFilePathS = os.path.join(self.data_dir, "data_shortcoll.csv")
+        self.test_rleFilePathS = os.path.join(self.data_dir, "csv.csv")
 
     def writeAllVideo(self, framesL):
         if self.counter < 100000:
