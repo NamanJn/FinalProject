@@ -9,7 +9,7 @@ ee = execfile
 import operator
 
 class Tracker(object):
-    def __init__(self, frame, tubeNumber, fps, writeData=False, num_of_flies=1 ):
+    def __init__(self, frame, tubeNumber, fps, writeData=False, writeContourVideo=False, num_of_flies=1 ):
         self.tubeNumber = tubeNumber 
         self.frame = frame
         self.gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
@@ -29,6 +29,7 @@ class Tracker(object):
         self.out = None 
         self.speed = 7
         self.writeData = writeData
+        self.writeContourVideo = writeContourVideo
         self.writing = False
         self.contourVideoName = "output_short_collisions_correct.avi"
         self.collisionLength = 0
@@ -40,18 +41,20 @@ class Tracker(object):
         self.dataFilePathS = os.path.join(self.data_dir,"data_shortcoll.csv")
         self.test_rleFilePathS = os.path.join(self.data_dir,"csv.csv")
 
-    def writeAllVideo(self, bigContourFrame):
+    def writeAllVideo(self, framesL):
         if self.counter < 100000:
+
+                imageToWrite = self.stitchImages(framesL)
                 if not self.writing:
                     #self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
-                    imageToWrite = self.stitchImages([bigContourFrame])
+
                     print imageToWrite.shape
                     fourcc = cv2.cv.CV_FOURCC(*'mp4v')
                     pdb.set_trace()
-                    self.out = cv2.VideoWriter(self.contourVideoName, fourcc, self.fps, (imageToWrite.shape[1],imageToWrite.shape[0]))
-                    self.writing = True;
+                    self.out = cv2.VideoWriter(self.contourVideoName, fourcc, self.fps, (imageToWrite[0].shape[1], imageToWrite[0].shape[0]))
+                    self.writing = True
                 else:
-                    imageToWrite = self.stitchImages([bigContourFrame])
+
                     self.out.write(imageToWrite)
         else:
             self.out.release()
@@ -226,27 +229,26 @@ class Tracker(object):
 
         #print positions
         # Images to show.
+        imagesToShowL = [
+               frame,
+               self.gray,
+               self.diff,
+               self.binary,
+               allContourFrame,
+               bigContourFrame,
+               bigAndOnlyFlyContourFrame,
+               boundingRectFrame
+                ]
+
+        imagesToShowL += maskedL
+        stitched = self.stitchImages(imagesToShowL)
+
         if self.counter < 0: # don't get rid of this
-            imagesToShowL = [
-                   frame,
-                   self.gray,
-                   self.diff,
-                   self.binary,
-                   allContourFrame,
-                   bigContourFrame,
-                   bigAndOnlyFlyContourFrame,
-                   boundingRectFrame
-                    ]
-
-            imagesToShowL += maskedL
-            stitched = self.stitchImages(imagesToShowL)
-
             # adding key handlers and showign the stitched image
             cv2.imshow("stitched", stitched)
-
             self.addKeyHandlers()
 
-        self.writeAllVideo(bigContourFrame)
+        if self.writeContourVideo: self.writeAllVideo(imagesToShowL)
 
         if self.writeData: self.writeDataFile(positions_proper, bigcontours)
 
