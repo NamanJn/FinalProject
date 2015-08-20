@@ -43,7 +43,7 @@ class Tracker(object):
         self.alpha = 0.2
         self.data_dir = configurations.data_dir
         self.dataFilePathS = os.path.join(self.data_dir, "data_shortcoll.csv")
-        self.test_rleFilePathS = os.path.join(self.data_dir, "csv.csv")
+        self.test_rleFilePathS = configurations.rle_data_file
         self.debug_imgs_dir = configurations.debug_images_dir
         self.writeRawImages = writeRawImages
         self.writeContourImages = writeContourImages
@@ -178,11 +178,11 @@ class Tracker(object):
         cv2.drawContours(bigAndOnlyFlyContourFrame, bigAndFlyContours,-1,(255,255,0),1)
 
         # getting width of contours
-        boundingRectFrame = bigContourFrame.copy()
+        boundingRectFrame = bigAndOnlyFlyContourFrame.copy()
         widthsL = [50]
         if len(bigAndFlyContours) >= 2:
             #print len(bigAndFlyContours)
-            boundingRectFrame, widthsL = self.getWidthOfContours(bigAndFlyContours, bigContourFrame)
+            boundingRectFrame, widthsL = self.getWidthOfContours(bigAndFlyContours, bigAndOnlyFlyContourFrame)
 
 
         positions = self.getPositions(bigAndFlyContours)
@@ -265,7 +265,7 @@ class Tracker(object):
 
         if self.writeContourVideo: self.writeAllVideo(imagesForVideoL)
 
-        if self.writeData: self.writeDataFile(positions_proper, bigcontours)
+        if self.writeData: self.writeDataFile(positions_proper, bigAndFlyContours)
 
         if self.writeContourImages: self.writeImages(self.stitchImages([bigAndOnlyFlyContourFrame]), self.contourImgDir)
 
