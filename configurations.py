@@ -20,6 +20,8 @@ corrected_data_dir = "corrected_data"
 # validation_results_directory
 validation_results_dir = "validation_results"
 
+# debugging images directory
+debug_images_dir = "debug_imgs"
 
 # raw images directory
 raw_imgs_dir = "raw_imgs"

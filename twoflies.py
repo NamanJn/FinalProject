@@ -36,11 +36,11 @@ class Tracker(object):
         self.contourImgDir = "contour_imgs"
         self.rawImgDir = configurations.raw_imgs_dir
         self.maxFlyGrayScaleValue = 117
-        self.alpha = 0.0005
+        self.alpha = 0.3
         self.data_dir = configurations.data_dir
         self.dataFilePathS = os.path.join(self.data_dir, "data_shortcoll.csv")
         self.test_rleFilePathS = os.path.join(self.data_dir, "csv.csv")
-
+        self.debug_imgs_dir = configurations.debug_images_dir
     def writeAllVideo(self, framesL):
         if self.counter < 100000:
 
@@ -66,12 +66,12 @@ class Tracker(object):
         """
         self.counter += 1
         if self.counter % 500 == 0: print self.counter
-
+        if self.counter > 3000: self.maxFlyGrayScaleValue = 140
 
         self.frame = frame.copy()
 
         # converting frame to grayscale
-        cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY,dst=self.gray)
+        cv2.cvtColor(frame, code=cv2.COLOR_BGR2GRAY, dst=self.gray)
         gray_float = self.gray.astype("float32")
 
         # drawing the binary threshold image without running average
@@ -82,6 +82,11 @@ class Tracker(object):
         #         dst=self.binary_without_running_average)
 
         # getting the acumulator average
+        self.alpha -= 0.005
+
+        if self.alpha < 0:
+            self.alpha = 0.0
+        print self.alpha
         cv2.accumulateWeighted(src=gray_float, dst=self.accumulator, alpha=self.alpha)
         accumulator_int = self.accumulator.astype("uint8")
 
@@ -243,7 +248,7 @@ class Tracker(object):
         imagesToShowL = imagesForVideoL + maskedL
         stitched = self.stitchImages(imagesToShowL)
 
-        if self.counter < 0: # don't get rid of this
+        if self.counter > 0: # don't get rid of this
             # adding key handlers and showign the stitched image
             cv2.imshow("stitched", stitched)
             self.addKeyHandlers()
@@ -252,8 +257,7 @@ class Tracker(object):
 
         if self.writeData: self.writeDataFile(positions_proper, bigcontours)
 
-        self.writeContourImages(self.stitchImages([bigAndOnlyFlyContourFrame]))
-
+        self.writeImages(self.stitchImages([bigAndOnlyFlyContourFrame]),self.contourImgDir)
 
 
         # test_masked = 300
@@ -267,7 +271,7 @@ class Tracker(object):
     def writeRawImagesWithNumbers(self, image):
         cv2.imwrite(os.path.join(self.rawImgDir,"frame%s.png" % self.counter), image)
 
-    def writeContourImages(self, image):
+    def writeImages(self, image, directory):
         cv2.imwrite(os.path.join(self.contourImgDir,"frame%s.png" % self.counter),image) 
 
     def getPositions(self, bigcontours):
