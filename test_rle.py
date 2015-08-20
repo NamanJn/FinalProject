@@ -135,7 +135,9 @@ if __name__ == "__main__":
     ones = [ i for i in rle if i[0] == "1" ]
     twos = [ i for i in rle if i[0] == "2" ]
 
-    intercollisionLength = map(lambda x: x[1] < 20, twos)
+    interCollisionTimeThreshold = 4
+    interCollisionFrameThreshold = interCollisionTimeThreshold*configurations.fps
+    intercollisionLength = map(lambda x: x[1] < interCollisionFrameThreshold, twos)
     rle_intercollision = myencode(intercollisionLength)
 
     # getting the positions of intercollision frames that are less than 20 frames
@@ -156,7 +158,7 @@ if __name__ == "__main__":
         collisionStartFrame = startingCollision[2]
 
         collisionLengthsL.append(collisionLength)
-        pdb.set_trace()
+        #pdb.set_trace()
         createVideoFromImages(collisionStartFrame, collisionLength, configurations.debug_images_dir)
 
     collisionLengthsDistribution = Counter(collisionLengthsL)
