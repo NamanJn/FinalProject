@@ -9,7 +9,11 @@ ee = execfile
 import operator
 
 class Tracker(object):
-    def __init__(self, frame, tubeNumber, fps, writeData=False, writeContourVideo=False, num_of_flies=1 ):
+    def __init__(self, frame, tubeNumber, fps,
+                 writeData=False, writeContourVideo=False,
+                 writeRawImages=False, writeContourImages = False,
+                 num_of_flies=1):
+
         self.tubeNumber = tubeNumber 
         self.frame = frame
         self.gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
@@ -36,11 +40,14 @@ class Tracker(object):
         self.contourImgDir = "contour_imgs"
         self.rawImgDir = configurations.raw_imgs_dir
         self.maxFlyGrayScaleValue = 117
-        self.alpha = 0.3
+        self.alpha = 0.2
         self.data_dir = configurations.data_dir
         self.dataFilePathS = os.path.join(self.data_dir, "data_shortcoll.csv")
         self.test_rleFilePathS = os.path.join(self.data_dir, "csv.csv")
         self.debug_imgs_dir = configurations.debug_images_dir
+        self.writeRawImages = writeRawImages
+        self.writeContourImages = writeContourImages
+
     def writeAllVideo(self, framesL):
         if self.counter < 100000:
 
@@ -82,11 +89,13 @@ class Tracker(object):
         #         dst=self.binary_without_running_average)
 
         # getting the acumulator average
-        self.alpha -= 0.005
 
+        self.alpha -= 0.001
         if self.alpha < 0:
             self.alpha = 0.0
-        print self.alpha
+        else:
+            print self.alpha
+
         cv2.accumulateWeighted(src=gray_float, dst=self.accumulator, alpha=self.alpha)
         accumulator_int = self.accumulator.astype("uint8")
 
@@ -96,7 +105,7 @@ class Tracker(object):
 
 
         # drawing the binary threshold image with running average
-        cv2.threshold(src=self.diff,thresh=30,
+        cv2.threshold(src=self.diff,thresh=20,
                 maxval=255,
                 type=cv2.THRESH_BINARY,
                 dst=self.binary)
@@ -227,7 +236,7 @@ class Tracker(object):
             self.positionsD = positions_proper
             self.collisionLength = 0
 
-            self.writeRawImagesWithNumbers(self.stitchImages([rawImg]))
+            if self.writeRawImages: self.writeRawImagesWithNumbers(self.stitchImages([rawImg]))
         else:
             self.collisionLength += 1
 
@@ -246,6 +255,7 @@ class Tracker(object):
                 ]
 
         imagesToShowL = imagesForVideoL + maskedL
+
         stitched = self.stitchImages(imagesToShowL)
 
         if self.counter > 0: # don't get rid of this
@@ -257,13 +267,10 @@ class Tracker(object):
 
         if self.writeData: self.writeDataFile(positions_proper, bigcontours)
 
-        self.writeImages(self.stitchImages([bigAndOnlyFlyContourFrame]), self.contourImgDir)
+        if self.writeContourImages: self.writeImages(self.stitchImages([bigAndOnlyFlyContourFrame]), self.contourImgDir)
 
         # writing debugging images
-        try:
-            self.writeImages(imagesForVideoL, self.debug_imgs_dir)
-        except:
-            pass
+        self.writeImages(self.stitchImages(imagesForVideoL), self.debug_imgs_dir)
 
         # test_masked = 300
         # if self.counter % test_masked == 0: pdb.set_trace()
