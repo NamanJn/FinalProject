@@ -112,16 +112,18 @@ def createCollisionVideos():
         if collisionStartFrame > 300:
             cutContourVideo(collisionStartFrame, collisionLength)
 
-def createVideoFromImages(startFrame, collisionLength, directory):
+def createVideoFromImages(startFrame, collisionLength, directory, bufferTime = 10):
 
     imageDirectory = directory
     complex_video_dir = configurations.complex_video_dir
     fps = configurations.fps
-    stringToExecute = 'ffmpeg -start_number %s -framerate %s -i %s/frame%%d.png -vframes %s -vcodec mpeg4 %s/testos.avi' % (startFrame,
+    videoStartFrame = startFrame - bufferTime
+    collisionLengthWithBuffer = collisionLength + 2*bufferTime
+    stringToExecute = 'ffmpeg -start_number %s -framerate %s -i %s/frame%%d.png -vframes %s -vcodec mpeg4 %s/collision%s.mp4' % (videoStartFrame,
                                                                                                                        fps,
                                                                                                                        imageDirectory,
-                                                                                                                       collisionLength,
-    complex_video_dir)
+                                                                                                                       collisionLengthWithBuffer,
+    complex_video_dir, startFrame)
 
     os.system(stringToExecute)
 
@@ -154,7 +156,8 @@ if __name__ == "__main__":
         collisionStartFrame = startingCollision[2]
 
         collisionLengthsL.append(collisionLength)
-        #cutContourVideo(collisionStartFrame, collisionLength, configurations.complex_video_dir)
+        pdb.set_trace()
+        createVideoFromImages(collisionStartFrame, collisionLength, configurations.debug_images_dir)
 
     collisionLengthsDistribution = Counter(collisionLengthsL)
     print collisionLengthsDistribution
