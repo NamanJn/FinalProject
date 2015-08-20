@@ -33,12 +33,12 @@ if configurations.fps != fps:
 ret, frame = cap.read()
 frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
 # initialising the tracker function.
-tracker = Tracker(frameROI, writeData=False, writeContourVideo=True, fps=fps, num_of_flies=2, tubeNumber = tube_number)
+tracker = Tracker(frameROI, writeData=False, writeContourVideo=False, fps=fps, num_of_flies=2, tubeNumber = tube_number)
 
 frame_shape = frameROI.shape
 write_video = False 
 if write_video:
-    fourcc = cv2.cv.CV_FOURCC('m','p','4','v')
+    fourcc = cv2.cv.CV_FOURCC('m','p', '4','v')
     out = cv2.VideoWriter('output_test.mp4' , fourcc,
         fps=20,frameSize=(frame_shape[0], frame_shape[1]))
 

@@ -257,8 +257,13 @@ class Tracker(object):
 
         if self.writeData: self.writeDataFile(positions_proper, bigcontours)
 
-        self.writeImages(self.stitchImages([bigAndOnlyFlyContourFrame]),self.contourImgDir)
+        self.writeImages(self.stitchImages([bigAndOnlyFlyContourFrame]), self.contourImgDir)
 
+        # writing debugging images
+        try:
+            self.writeImages(imagesForVideoL, self.debug_imgs_dir)
+        except:
+            pass
 
         # test_masked = 300
         # if self.counter % test_masked == 0: pdb.set_trace()
@@ -269,10 +274,10 @@ class Tracker(object):
         return positions
 
     def writeRawImagesWithNumbers(self, image):
-        cv2.imwrite(os.path.join(self.rawImgDir,"frame%s.png" % self.counter), image)
+        cv2.imwrite(os.path.join(self.rawImgDir, "frame%s.png" % self.counter), image)
 
     def writeImages(self, image, directory):
-        cv2.imwrite(os.path.join(self.contourImgDir,"frame%s.png" % self.counter),image) 
+        cv2.imwrite(os.path.join(directory, "frame%s.png" % self.counter), image)
 
     def getPositions(self, bigcontours):
         positions = []
