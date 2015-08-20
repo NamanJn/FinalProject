@@ -135,13 +135,20 @@ if __name__ == "__main__":
     ones = [ i for i in rle if i[0] == "1" ]
     twos = [ i for i in rle if i[0] == "2" ]
 
-    interCollisionTimeThreshold = 4
+    interCollisionTimeThreshold = 6 # This is in seconds.
     interCollisionFrameThreshold = interCollisionTimeThreshold*configurations.fps
     intercollisionLength = map(lambda x: x[1] < interCollisionFrameThreshold, twos)
     rle_intercollision = myencode(intercollisionLength)
 
     # getting the positions of intercollision frames that are less than 20 frames
-    complex_collisionsL = [i for i in rle_intercollision if i[0] == True and i[1] > 1 ]
+    complex_collisionsL  = []
+    simple_collisionsL = []
+    for i in rle_intercollision:
+        if i[0] == True and i[1] > 1:
+            complex_collisionsL.append(i)
+        else:
+            simple_collisionsL.append(i)
+
 
     # getting collisionStartFrame and collisionLength to start cutting the complex videos
     collisionLengthsL = []
