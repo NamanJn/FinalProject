@@ -114,12 +114,14 @@ def createCollisionVideos():
 
 def createVideoFromImages(startFrame, collisionLength, directory):
 
-    imageDirectory = configurations.contour_images_dir
+    imageDirectory = directory
+    complex_video_dir = configurations.complex_video_dir
     fps = configurations.fps
-    stringToExecute = 'ffmpeg -start_number %s -framerate %s -i %s/frame%%d.png -vframes %s -vcodec mpeg4 testos.avi' % (startFrame,
+    stringToExecute = 'ffmpeg -start_number %s -framerate %s -i %s/frame%%d.png -vframes %s -vcodec mpeg4 %s/testos.avi' % (startFrame,
                                                                                                                        fps,
                                                                                                                        imageDirectory,
-                                                                                                                       collisionLength)
+                                                                                                                       collisionLength,
+    complex_video_dir)
 
     os.system(stringToExecute)
 
