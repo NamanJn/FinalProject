@@ -119,7 +119,7 @@ def createVideoFromImages(startFrame, collisionLength, directory, bufferTime = 1
     fps = configurations.fps
     videoStartFrame = startFrame - bufferTime
     collisionLengthWithBuffer = collisionLength + 2*bufferTime
-    stringToExecute = 'ffmpeg -start_number %s -framerate %s -i %s/frame%%d.png -vframes %s -vcodec mpeg4 %s/collision%s.mp4' % (videoStartFrame,
+    stringToExecute = 'ffmpeg -start_number %s -framerate %s -i %s/frame%%d.png -vframes %s -vcodec mpeg4 %s/collision%s.mp4 -y' % (videoStartFrame,
                                                                                                                        fps,
                                                                                                                        imageDirectory,
                                                                                                                        collisionLengthWithBuffer,
