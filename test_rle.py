@@ -116,8 +116,10 @@ def createComplexVideos(rle, twos, complex_collisionsL):
 def createSimpleCollisionVideos(rle):
 
     simple_collisionsL = []
+    interCollisionFrameThreshold = configurations.interCollisionTime * configurations.fps
     #for every collision, I want to see on either side if they are longer than 6 seconds.
     for index, item in enumerate(rle):
+
         if item[0] == "1":
 
             # checking length of previous intercollision
@@ -168,7 +170,7 @@ if __name__ == "__main__":
     ones = [ i for i in rle if i[0] == "1" ]
     twos = [ i for i in rle if i[0] == "2" ]
 
-    interCollisionTimeThreshold = 6 # This is in seconds.
+    interCollisionTimeThreshold = configurations.interCollisionTime # This is in seconds.
     interCollisionFrameThreshold = interCollisionTimeThreshold*configurations.fps
     intercollisionLength = map(lambda x: x[1] < interCollisionFrameThreshold, twos)
     rle_intercollision = myencode(intercollisionLength)
@@ -180,8 +182,8 @@ if __name__ == "__main__":
         if i[0] == True and i[1] > 1:
             complex_collisionsL.append(i)
 
-
-    #collisionLengthsL = createComplexVideos(rle,twos,complex_collisionsL)
+    #createComplexVideos(rle, twos, complex_collisionsL)
+    collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL)
     #collisionLengthsDistribution = Counter(collisionLengthsL)
     #print collisionLengthsDistribution
 

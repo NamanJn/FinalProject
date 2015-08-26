@@ -45,3 +45,6 @@ collision_value = 50
 
 # this file contains the data of the number of contours per frame.
 rle_data_file = os.path.join(data_dir, "csv.csv")
+
+# This is to create the simple and complex collisions.
+interCollisionTime = 1 # This is in seconds
