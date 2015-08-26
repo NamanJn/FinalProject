@@ -94,8 +94,24 @@ def readAndCreateRle(string):
     return rle
 
 
-def createComplexVideos():
-    pass
+def createComplexVideos(rle, twos, complex_collisionsL):
+    collisionLengthsL = []
+    for i in complex_collisionsL:
+        firstInterCollision = twos[i[2]-1]
+        lastInterCollision = twos[i[2]-1 + i[1]-1]
+        startingCollision = rle[firstInterCollision[3]-1]
+        if lastInterCollision[3] + 1 == len(rle):
+            endingCollision = rle[lastInterCollision[3]-1]
+        else:
+            endingCollision = rle[lastInterCollision[3]+1]
+
+        collisionLength = endingCollision[2]+endingCollision[1] - startingCollision[2] + 1
+        collisionStartFrame = startingCollision[2]
+
+        collisionLengthsL.append(collisionLength)
+        #pdb.set_trace()
+        createVideoFromImages(collisionStartFrame, collisionLength, configurations.debug_images_dir)
+
 
 
 def createCollisionVideos():
@@ -149,24 +165,7 @@ if __name__ == "__main__":
         else:
             simple_collisionsL.append(i)
 
-
-    # getting collisionStartFrame and collisionLength to start cutting the complex videos
-    collisionLengthsL = []
-    for i in complex_collisionsL:
-        firstInterCollision = twos[i[2]-1]
-        lastInterCollision = twos[i[2]-1 + i[1]-1]
-        startingCollision = rle[firstInterCollision[3]-1]
-        if lastInterCollision[3] + 1 == len(rle):
-            endingCollision = rle[lastInterCollision[3]-1]
-        else:
-            endingCollision = rle[lastInterCollision[3]+1]
-
-        collisionLength = endingCollision[2]+endingCollision[1] - startingCollision[2] + 1
-        collisionStartFrame = startingCollision[2]
-
-        collisionLengthsL.append(collisionLength)
-        #pdb.set_trace()
-        createVideoFromImages(collisionStartFrame, collisionLength, configurations.debug_images_dir)
+    collisionLengthsL = createComplexVideos(rle,twos,complex_collisionsL)
 
     collisionLengthsDistribution = Counter(collisionLengthsL)
     print collisionLengthsDistribution
