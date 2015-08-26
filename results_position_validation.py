@@ -26,6 +26,9 @@ xL = []
 curated_x = []
 generated_x = []
 
+curated_y = []
+generated_y = []
+
 for row in curated.values:
 
     frame_number = row[0] # getting the frame number in the curated row
@@ -39,12 +42,17 @@ for row in curated.values:
             row_in_generated = i
             break
 
+    if abs(row_in_generated[2] - row[2]) > 5:
+        print row_in_generated
+        print row
     generated_x.append(row_in_generated[2])
     curated_x.append(row[2])
+    generated_y.append(row_in_generated[3])
+    curated_y.append(row[3])
 
 
 # do linear regression
-def plotWithBestFitLine(xL, yL):
+def plotWithBestFitLine(xL, yL, outputFileNameS):
     xL = np.array(xL)
     yL = np.array(yL)
     m, b = np.polyfit(xL, yL, 1)
@@ -54,8 +62,9 @@ def plotWithBestFitLine(xL, yL):
     plt.plot(xL, m*xL+b, '-r')
     plt.xlabel("generated x-coordinates")
     plt.ylabel("manually inspected x-coordinates    ")
-    plt.savefig("linreg.jpg")
+    plt.savefig(outputFileNameS)
     plt.show()
     return m, b
 
-m, b = plotWithBestFitLine(generated_x, curated_x)
+m, b = plotWithBestFitLine(generated_x, curated_x, "xlinreg.png")
+m, b = plotWithBestFitLine(generated_y, curated_y, "ylinreg.png")
