@@ -113,6 +113,21 @@ def createComplexVideos(rle, twos, complex_collisionsL):
         createVideoFromImages(collisionStartFrame, collisionLength, configurations.debug_images_dir, configurations.complex_video_dir)
 
 
+def createSimpleCollisionVideos(rle):
+
+    simple_collisionsL = []
+    #for every collision, I want to see on either side if they are longer than 6 seconds.
+    for index, item in enumerate(rle):
+        if item[0] == "1":
+
+            # checking length of previous intercollision
+            before_length = rle[index-1][1]
+            # checking length of after intercollision
+            after_length = rle[index+1][1]
+            if before_length >= interCollisionFrameThreshold and after_length >= interCollisionFrameThreshold:
+                simple_collisionsL.append(item)
+                createVideoFromImages(item[2], item[1], configurations.debug_images_dir, configurations.simple_collision_dir)
+
 
 def createCollisionVideos():
 
@@ -165,18 +180,6 @@ if __name__ == "__main__":
         if i[0] == True and i[1] > 1:
             complex_collisionsL.append(i)
 
-    simple_collisionsL = []
-    #for every collision, I want to see on either side if they are longer than 6 seconds.
-    for index, item in enumerate(rle):
-        if item[0] == "1":
-
-            # checking length of previous intercollision
-            before_length = rle[index-1][1]
-            # checking length of after intercollision
-            after_length = rle[index+1][1]
-            if before_length >= interCollisionFrameThreshold and after_length >= interCollisionFrameThreshold:
-                simple_collisionsL.append(item)
-                createVideoFromImages(item[2], item[1], configurations.debug_images_dir, configurations.simple_collision_dir)
 
     #collisionLengthsL = createComplexVideos(rle,twos,complex_collisionsL)
     #collisionLengthsDistribution = Counter(collisionLengthsL)
