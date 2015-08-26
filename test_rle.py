@@ -110,7 +110,7 @@ def createComplexVideos(rle, twos, complex_collisionsL):
 
         collisionLengthsL.append(collisionLength)
         #pdb.set_trace()
-        createVideoFromImages(collisionStartFrame, collisionLength, configurations.debug_images_dir)
+        createVideoFromImages(collisionStartFrame, collisionLength, configurations.debug_images_dir, configurations.complex_video_dir)
 
 
 
@@ -128,18 +128,20 @@ def createCollisionVideos():
         if collisionStartFrame > 300:
             cutContourVideo(collisionStartFrame, collisionLength)
 
-def createVideoFromImages(startFrame, collisionLength, directory, bufferTime = 10):
+def createVideoFromImages(startFrame, collisionLength, directory, sinkDirectory, bufferTime = 10 ):
 
     imageDirectory = directory
-    complex_video_dir = configurations.complex_video_dir
+
     fps = configurations.fps
+
     videoStartFrame = startFrame - bufferTime
+
     collisionLengthWithBuffer = collisionLength + 2*bufferTime
     stringToExecute = 'ffmpeg -start_number %s -framerate %s -i %s/frame%%d.png -vframes %s -vcodec mpeg4 %s/collision%s.mp4 -y' % (videoStartFrame,
                                                                                                                        fps,
                                                                                                                        imageDirectory,
                                                                                                                        collisionLengthWithBuffer,
-    complex_video_dir, startFrame)
+    sinkDirectory, startFrame)
 
     os.system(stringToExecute)
 
@@ -157,7 +159,7 @@ if __name__ == "__main__":
     rle_intercollision = myencode(intercollisionLength)
 
     # getting the positions of intercollision frames that are less than 20 frames
-    complex_collisionsL  = []
+    complex_collisionsL = []
     simple_collisionsL = []
     for i in rle_intercollision:
         if i[0] == True and i[1] > 1:
@@ -165,8 +167,8 @@ if __name__ == "__main__":
         else:
             simple_collisionsL.append(i)
 
-    collisionLengthsL = createComplexVideos(rle,twos,complex_collisionsL)
 
-    collisionLengthsDistribution = Counter(collisionLengthsL)
-    print collisionLengthsDistribution
+    #collisionLengthsL = createComplexVideos(rle,twos,complex_collisionsL)
+    #collisionLengthsDistribution = Counter(collisionLengthsL)
+    #print collisionLengthsDistribution
 
