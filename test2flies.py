@@ -21,7 +21,7 @@ tube_y = 135 + 42*(tube_number-1)
 tube_x = 70
 
 # reading the video
-cap = cv2.VideoCapture("videos/2flies_10fps_10thAug.mp4")
+cap = cv2.VideoCapture("videos/2flies_4hours_10fps.mp4")
 
 # initialising the tracker class
 print cap.get(3)
