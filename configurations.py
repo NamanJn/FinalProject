@@ -33,6 +33,9 @@ data_dir = "data"
 
 complex_video_dir = "complex_collision_vids"
 
+# simple video directory
+simple_collision_dir = "simple_collision_vids"
+
 # data set column names
 col_names = ['frame_number', 'fly', 'positionx', 'positiony', 'area', 'grayscale', 'width']
 
