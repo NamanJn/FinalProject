@@ -47,6 +47,7 @@ class Tracker(object):
         self.debug_imgs_dir = configurations.debug_images_dir
         self.writeRawImages = writeRawImages
         self.writeContourImages = writeContourImages
+        self.contourArea_lowerBound= 30
 
     def writeAllVideo(self, framesL):
         if self.counter < 100000:
@@ -73,7 +74,9 @@ class Tracker(object):
         """
         self.counter += 1
         if self.counter % 500 == 0: print self.counter
-        if self.counter > 3000: self.maxFlyGrayScaleValue = 140
+        if self.counter == 3000:
+            self.maxFlyGrayScaleValue = 130
+            self.contourArea_lowerBound = 20
 
         self.frame = frame.copy()
 
@@ -133,7 +136,7 @@ class Tracker(object):
         for contourItem in contourL:
             contourArea = cv2.contourArea(contourItem)
             #print "contourArea is ,", contourArea
-            if 30 < contourArea < 700:
+            if self.contourArea_lowerBound < contourArea < 700:
                 bigcontours.append(contourItem)
                 contourAreas.append(contourArea)
         bigContourFrame = frame.copy()
