@@ -9,12 +9,12 @@ ee = execfile
 import operator
 
 class Tracker(object):
-    def __init__(self, frame, tubeNumber, fps,
+    def __init__(self, frame, tubeNumber, fps, resultsdir,
                  writeData=False, writeContourVideo=False,
                  writeRawImages=False, writeContourImages = False,
                  num_of_flies=1):
 
-        self.tubeNumber = tubeNumber 
+        self.tubeNumber = tubeNumber
         self.frame = frame
         self.gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
         self.gray_float = self.gray.astype("float32") 
@@ -31,23 +31,31 @@ class Tracker(object):
         self.previousIsOne = False 
         self.fourcc = None
         self.out = None 
-        self.speed = 7
+        self.speed = 2
         self.writeData = writeData
         self.writeContourVideo = writeContourVideo
         self.writing = False
         self.contourVideoName = "output_multipleframes.avi"
         self.collisionLength = 0
-        self.contourImgDir = "contour_imgs"
-        self.rawImgDir = configurations.raw_imgs_dir
+
+
         self.maxFlyGrayScaleValue = 117
         self.alpha = 0.3
-        self.data_dir = configurations.data_dir
-        self.dataFilePathS = os.path.join(self.data_dir, "data_shortcoll.csv")
-        self.test_rleFilePathS = configurations.rle_data_file
-        self.debug_imgs_dir = configurations.debug_images_dir
+
         self.writeRawImages = writeRawImages
         self.writeContourImages = writeContourImages
         self.contourArea_lowerBound= 30
+
+        # directories and paths
+        self.resultsDir = resultsdir
+        self.debug_imgs_dir = os.path.join(self.resultsDir, configurations.debug_images_dir)
+        self.data_dir = os.path.join(self.resultsDir, configurations.data_dir)
+        self.rawImgDir = os.path.join(self.resultsDir, configurations.raw_imgs_dir)
+        self.contourImgDir = os.path.join(self.resultsDir, "contour_imgs")
+
+        # file paths
+        self.dataFilePathS = os.path.join(self.data_dir, "data_shortcoll.csv")
+        self.test_rleFilePathS = os.path.join(self.resultsDir, configurations.rle_data_file)
 
     def writeAllVideo(self, framesL):
         if self.counter < 100000:
