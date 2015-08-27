@@ -8,4 +8,5 @@
 <ul>
     <li>OpenCV</li>
     <li>ffmpeg</li>
+    <li>docopt</li>
 </ul>
