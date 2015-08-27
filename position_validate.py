@@ -1,13 +1,33 @@
-import inspect 
+
+"""
+Usage:
+        position_validate.py <results_directory>
+
+"""
+
+import inspect
 import cv2
 import pdb
 import os
-from configurations import raw_imgs_dir, validation_results_dir
+
+import configurations
 import numpy as np
+import docopt
 ee = execfile
 
-dir_path = raw_imgs_dir
+d = docopt.docopt(__doc__)
+results_directory = d['<results_directory>']
+
+if not os.path.exists(results_directory):
+    raise EnvironmentError("The '%s' does not exist. It probably means you have not run the analysis yet" % results_directory )
+
+
+dir_path = os.path.join(results_directory, configurations.raw_imgs_dir)
 results_file = "position_validation.csv"
+
+
+validation_results_dir = os.path.join(results_directory, configurations.validation_results_dir)
+fileToWriteResults = os.path.join(validation_results_dir, results_file)
 
 # create directory if doesn't exist.
 if not os.path.isdir(validation_results_dir):
@@ -64,7 +84,7 @@ if __name__ == "__main__":
         print 'showing image now'
         listener.show()
 
-        fileToWriteResults = os.path.join(validation_results_dir, results_file)
+
 
         print "press 's' to skip to next image"
         print "press 'a' once you are done clicking both flies"

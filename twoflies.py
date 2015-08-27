@@ -16,7 +16,7 @@ class Tracker(object):
 
         self.tubeNumber = tubeNumber
         self.frame = frame
-        self.gray = cv2.cvtColor(frame,code=cv2.COLOR_BGR2GRAY)
+        self.gray = cv2.cvtColor(frame, code=cv2.COLOR_BGR2GRAY)
         self.gray_float = self.gray.astype("float32") 
         self.accumulator = self.gray.astype("float32")
         self.accumulator_int = self.gray.copy()
@@ -46,7 +46,7 @@ class Tracker(object):
         self.writeContourImages = writeContourImages
         self.contourArea_lowerBound = 30
 
-        # directories and paths ( Directories have to end with 'dir' or 'Dir')
+        # directories and paths ( Directories have to end with '[Dd]ir')
         self.results_dir = resultsdir
         self.debug_imgs_dir = os.path.join(self.results_dir, configurations.debug_images_dir)
         self.data_dir = os.path.join(self.results_dir, configurations.data_dir)
@@ -57,7 +57,7 @@ class Tracker(object):
         self.createDirectories()
 
         # file paths
-        self.dataFilePathS = os.path.join(self.data_dir, "data_shortcoll.csv")
+        self.dataFilePathS = os.path.join(self.data_dir, "data.csv")
         self.test_rleFilePathS = os.path.join(self.results_dir, configurations.rle_data_file)
 
     def writeAllVideo(self, framesL):
