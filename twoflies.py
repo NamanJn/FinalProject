@@ -40,7 +40,7 @@ class Tracker(object):
         self.contourImgDir = "contour_imgs"
         self.rawImgDir = configurations.raw_imgs_dir
         self.maxFlyGrayScaleValue = 117
-        self.alpha = 0.2
+        self.alpha = 0.3
         self.data_dir = configurations.data_dir
         self.dataFilePathS = os.path.join(self.data_dir, "data_shortcoll.csv")
         self.test_rleFilePathS = configurations.rle_data_file
@@ -261,7 +261,7 @@ class Tracker(object):
 
         stitched = self.stitchImages(imagesToShowL)
 
-        if self.counter < 0 : # don't get rid of this
+        if self.counter > 0: # don't get rid of this
             # adding key handlers and showign the stitched image
             cv2.imshow("stitched", stitched)
             self.addKeyHandlers()
