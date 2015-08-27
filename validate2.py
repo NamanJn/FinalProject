@@ -2,7 +2,7 @@
 
 """
 Usage:
-        validate2.py <username>
+        validate2.py <results_directory> <username>
 
 """
 
@@ -23,6 +23,7 @@ import docopt
 
 d = docopt.docopt(__doc__)
 currentUser = d['<username>']
+results_directory = d['<results_directory>']
 ee = execfile
 
 
