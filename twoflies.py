@@ -44,18 +44,21 @@ class Tracker(object):
 
         self.writeRawImages = writeRawImages
         self.writeContourImages = writeContourImages
-        self.contourArea_lowerBound= 30
+        self.contourArea_lowerBound = 30
 
-        # directories and paths
-        self.resultsDir = resultsdir
-        self.debug_imgs_dir = os.path.join(self.resultsDir, configurations.debug_images_dir)
-        self.data_dir = os.path.join(self.resultsDir, configurations.data_dir)
-        self.rawImgDir = os.path.join(self.resultsDir, configurations.raw_imgs_dir)
-        self.contourImgDir = os.path.join(self.resultsDir, "contour_imgs")
+        # directories and paths ( Directories have to end with 'dir' or 'Dir')
+        self.results_dir = resultsdir
+        self.debug_imgs_dir = os.path.join(self.results_dir, configurations.debug_images_dir)
+        self.data_dir = os.path.join(self.results_dir, configurations.data_dir)
+        self.rawImgDir = os.path.join(self.results_dir, configurations.raw_imgs_dir)
+        self.contourImgDir = os.path.join(self.results_dir, "contour_imgs")
+
+        # creating the directories
+        self.createDirectories()
 
         # file paths
         self.dataFilePathS = os.path.join(self.data_dir, "data_shortcoll.csv")
-        self.test_rleFilePathS = os.path.join(self.resultsDir, configurations.rle_data_file)
+        self.test_rleFilePathS = os.path.join(self.results_dir, configurations.rle_data_file)
 
     def writeAllVideo(self, framesL):
         if self.counter < 100000:
@@ -75,8 +78,19 @@ class Tracker(object):
         else:
             self.out.release()
 
+    def createDirectories(self):
+        """
+        This creates the appropriate directories needed to save the results.
+        """
 
-    def apply(self,frame):
+        # This gets the names of the directories
+        directoriesL = [self.__dict__[i] for i in self.__dict__.keys() if (i.endswith("dir") or i.endswith("Dir"))]
+
+        for directoryS in directoriesL:
+            if not os.path.exists(directoryS):
+                os.makedirs(directoryS)
+
+    def apply(self, frame):
         """
         returns moments (center) of contours
         """
