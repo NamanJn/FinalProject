@@ -1,3 +1,11 @@
 
 
-1. twoflies - File containing the Tracking class for the 2 flies
+1. twoflies - File containing the Fly Tracking class
+
+
+<h1>Dependencies:</h1>
+
+<ul>
+    <li>OpenCV</li>
+    <li>ffmpeg</li>
+</ul>
