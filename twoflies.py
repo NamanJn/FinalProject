@@ -209,7 +209,6 @@ class Tracker(object):
             #print len(bigAndFlyContours)
             boundingRectFrame, widthsL = self.getWidthOfContours(bigAndFlyContours, bigAndOnlyFlyContourFrame)
 
-
         positions = self.getPositions(bigAndFlyContours)
         positions_and_areas = []
         for i in zip(positions, bigAndFlyContourAreas, bigAndFlyMean,widthsL):
@@ -461,11 +460,10 @@ class Tracker(object):
 
         for cnt in contourL:
             rect = cv2.minAreaRect(cnt)
-            width = rect[1][1]
+            width = max(rect[1]) # taking the max of the width/height ratio
             widthsL.append(width)
 
             box = cv2.cv.BoxPoints(rect)
-
 
             box = np.int0(box)
             cv2.drawContours(im, [box], -1, (0, 0, 255),1)
