@@ -6,6 +6,8 @@ from twoflies import Tracker
 import configurations
 ee = execfile
 
+def runTracker(videoNameS, outputdirNameS):
+    pass
 counter = 0
 
 # you need to specify this number 
@@ -28,10 +30,13 @@ print cap.get(3)
 print cap.get(4)
 fps = cap.get(5)
 print "frames per second", fps
+
 if configurations.fps != fps:
     raise ValueError("Change fps in the configuration file!")
+
 ret, frame = cap.read()
 frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
+
 # initialising the tracker function.
 tracker = Tracker(frameROI, resultsdir="retest_tube4", writeData=True, writeRawImages=True, writeContourVideo=False, fps=fps, num_of_flies=2, tubeNumber=tube_number)
 
@@ -39,8 +44,8 @@ frame_shape = frameROI.shape
 write_video = False 
 if write_video:
     fourcc = cv2.cv.CV_FOURCC('m','p', '4','v')
-    out = cv2.VideoWriter('output_test.mp4' , fourcc,
-        fps=20,frameSize=(frame_shape[0], frame_shape[1]))
+    out = cv2.VideoWriter('output_test.mp4', fourcc,
+        fps=20, frameSize=(frame_shape[0], frame_shape[1]))
 
 while True:
 

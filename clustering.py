@@ -19,7 +19,7 @@ ee = execfile
 
 d = docopt.docopt(__doc__)
 results_directory = os.path.join(configurations.output_dir, ['<results_directory>'])
-print "This is the resultsdirectory", results_directory
+print "This is the results directory", results_directory
 dataFilePathS = os.path.join(results_directory, data_file)
 
 if not os.path.exists(dataFilePathS):
