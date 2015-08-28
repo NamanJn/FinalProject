@@ -42,9 +42,13 @@ col_names = ['frame_number', 'fly', 'positionx', 'positiony', 'area', 'grayscale
 # column values for collision rows
 collision_value = 50
 
-
+# File paths
 # this file contains the data of the number of contours per frame.
 rle_data_file = os.path.join(data_dir, "csv.csv")
+
+# this file contains the position data of the number of contours per frame.
+
+data_file = os.path.join(data_dir, "data.csv")
 
 # This is to create the simple and complex collisions.
 interCollisionTime = 1 # This is in seconds
