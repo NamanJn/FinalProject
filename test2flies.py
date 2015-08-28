@@ -7,12 +7,13 @@ import configurations
 import sys
 ee = execfile
 
-def runTracker(videoNameS, outputdirNameS, tube_x=70, tube_height=23, tube_length=500, tube_number=4):
+def runTracker(videoNameS, outputdirNameS, tube_x=70, tube_height=23,
+               tube_length=500, tube_number=4, y_offset=135, initial_alpha=0.3):
 
     counter = 0
 
     # you need to specify this number
-    tube_y = 135 + 42*(tube_number-1)
+    tube_y = y_offset + 42*(tube_number-1)
 
     # reading the video
     if not os.path.exists(videoNameS):
@@ -34,7 +35,9 @@ def runTracker(videoNameS, outputdirNameS, tube_x=70, tube_height=23, tube_lengt
     frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
 
     # initialising the tracker function.
-    tracker = Tracker(frameROI, resultsdir=outputdirNameS, writeData=True, writeRawImages=True, writeContourVideo=False, fps=fps, num_of_flies=2, tubeNumber=tube_number)
+    tracker = Tracker(frameROI, resultsdir=outputdirNameS, writeData=True, writeRawImages=True,
+                      writeContourVideo=False, fps=fps, num_of_flies=2, tubeNumber=tube_number,
+                      initial_alpha=initial_alpha)
 
     frame_shape = frameROI.shape
     write_video = False
@@ -61,5 +64,6 @@ def runTracker(videoNameS, outputdirNameS, tube_x=70, tube_height=23, tube_lengt
 
 
 if __name__ == "__main__":
+
     runTracker('videos/2flies_4hours_10fps.mp4', outputdirNameS='retest_tube4')
 

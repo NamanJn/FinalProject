@@ -12,7 +12,7 @@ class Tracker(object):
     def __init__(self, frame, tubeNumber, fps, resultsdir,
                  writeData=False, writeContourVideo=False,
                  writeRawImages=False, writeContourImages = False,
-                 num_of_flies=1):
+                 num_of_flies=1, initial_alpha = 0.3):
 
         self.tubeNumber = tubeNumber
         self.frame = frame
@@ -40,7 +40,7 @@ class Tracker(object):
 
 
         self.maxFlyGrayScaleValue = 117
-        self.alpha = 0.3
+        self.alpha = initial_alpha
 
         self.writeRawImages = writeRawImages
         self.writeContourImages = writeContourImages
@@ -429,11 +429,11 @@ class Tracker(object):
         return stitched_double
 
 
-    def getOnlyFlyContourAndMean(self, bigcontours,contourAreas):
+    def getOnlyFlyContourAndMean(self, bigcontours, contourAreas):
         mean_valuesL  = []
         maskedL = []
         if len(bigcontours) == 0:
-            maskedL = [np.zeros(self.gray.shape,np.uint8)]
+            maskedL = [np.zeros(self.gray.shape, np.uint8)]
 
 
         for index, bigcontourNP in enumerate(bigcontours):
