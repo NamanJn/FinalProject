@@ -13,12 +13,12 @@ import os
 from configurations import col_names, data_dir, collision_value, data_file
 import docopt
 import sys
-
+import configurations
 poing = inspect.getabsfile(inspect.currentframe())
 ee = execfile
 
 d = docopt.docopt(__doc__)
-results_directory = d['<results_directory>']
+results_directory = os.path.join(configurations.output_dir, ['<results_directory>'])
 print "This is the resultsdirectory", results_directory
 dataFilePathS = os.path.join(results_directory, data_file)
 

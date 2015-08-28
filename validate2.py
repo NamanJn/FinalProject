@@ -12,6 +12,7 @@ import pdb
 import os
 #from twoflies import Tracker
 from configurations import validation_results_dir
+import configurations
 import re
 import docopt
 # This script's aim is to get input from a user
@@ -23,7 +24,7 @@ import docopt
 
 d = docopt.docopt(__doc__)
 currentUser = d['<username>']
-results_directory = d['<results_directory>']
+results_directory = os.path.join(configurations.output_dir, d['<results_directory>'] )
 ee = execfile
 
 

@@ -5,6 +5,8 @@ poing = inspect.getabsfile(inspect.currentframe())
 import pdb
 import configurations
 from collections import Counter
+from os.path import join
+
 def myencode(string):
     
     prev = string[0]
@@ -164,8 +166,9 @@ def createVideoFromImages(startFrame, collisionLength, directory, sinkDirectory,
 
 if __name__ == "__main__":
 
-
-    rle = readAndCreateRle(configurations.rle_data_file)
+    user_dir = "tube4"
+    results_dir = os.path.join(configurations.output_dir,"tube4")
+    rle = readAndCreateRle(join(results_dir, configurations.rle_data_file))
 
     ones = [ i for i in rle if i[0] == "1" ]
     twos = [ i for i in rle if i[0] == "2" ]

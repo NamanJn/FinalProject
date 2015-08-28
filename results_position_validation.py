@@ -1,25 +1,42 @@
 
 
+"""
+Usage:
+        results_position_validation.py <results_directory>
+
+"""
+
 import os
+from os.path import join
 import sys
 from position_validate import results_file
-from configurations  import validation_results_dir
 import pandas as pd
 import inspect
 import numpy as np
-ee = execfile
 import matplotlib.pyplot as plt
 import pdb
-poing = inspect.getabsfile(inspect.currentframe())
-from configurations import col_names, data_dir
+import docopt
 
-file_path = os.path.join(validation_results_dir, results_file) 
+d = docopt.docopt(__doc__)
+ee = execfile
+poing = inspect.getabsfile(inspect.currentframe())
+
+from configurations import col_names, data_dir, validation_results_dir, data_file
+import configurations
+
+
+results_dir = join(configurations.output_dir, d['<results_directory>'])
+file_path = os.path.join(results_dir, validation_results_dir, results_file)
+
+if not os.path.exists(file_path):
+    print "run your analysis first !"
+
 
 print file_path
 
 
 curated = pd.read_csv(file_path, names=col_names[:4])
-generatedFilePathS = os.path.join(data_dir,"data_shortcoll.csv")
+generatedFilePathS = os.path.join(data_file)
 generated = pd.read_csv(generatedFilePathS, names=col_names)
 
 xL = []
