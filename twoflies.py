@@ -47,7 +47,7 @@ class Tracker(object):
         self.contourArea_lowerBound = 30
 
         # directories and paths ( Directories have to end with '[Dd]ir')
-        self.results_dir = resultsdir
+        self.results_dir = os.path.join(configurations.output_dir, resultsdir)
         self.debug_imgs_dir = os.path.join(self.results_dir, configurations.debug_images_dir)
         self.data_dir = os.path.join(self.results_dir, configurations.data_dir)
         self.rawImgDir = os.path.join(self.results_dir, configurations.raw_imgs_dir)

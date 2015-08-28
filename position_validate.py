@@ -16,7 +16,7 @@ import docopt
 ee = execfile
 
 d = docopt.docopt(__doc__)
-results_directory = d['<results_directory>']
+results_directory = os.path.join(configurations.output_dir, d['<results_directory>'])
 
 if not os.path.exists(results_directory):
     raise EnvironmentError("The '%s' does not exist. It probably means you have not run the analysis yet" % results_directory )

@@ -11,6 +11,7 @@ height_multiple_to_increase = 2
 # frames_per_second
 fps = 10
 
+# directories
 # contour images directory
 contour_images_dir = "contour_imgs"
 
@@ -30,12 +31,13 @@ raw_imgs_dir = "raw_imgs"
 data_dir = "data"
 
 # complex video directory
-
 complex_video_dir = "complex_collision_vids"
 
 # simple video directory
 simple_collision_dir = "simple_collision_vids"
 
+# results output directory
+output_dir = "output"
 # data set column names
 col_names = ['frame_number', 'fly', 'positionx', 'positiony', 'area', 'grayscale', 'width']
 
