@@ -22,23 +22,19 @@ import docopt
 # If no, then nothing is changed downstream. 
 
 
-d = docopt.docopt(__doc__)
-currentUser = d['<username>']
-results_directory = os.path.join(configurations.output_dir, d['<results_directory>'] )
-ee = execfile
 
 class InspectVideo(object):
     pass
 
-def playVideo(videoNameS):
+def playVideo(video_pathS):
 
     counter = 0
-    cap = cv2.VideoCapture(os.path.join(videoDirS, videoS))
+    cap = cv2.VideoCapture(video_pathS)
     ret, frame = cap.read()
     cv2.imshow("image", frame)
     while True:
         print "press a to continue"
-        print "playing video", videoNameS
+        print "playing video", os.path.basename(video_pathS)
         aKey = cv2.waitKey(0) 
         if aKey == ord("a"):
             break
@@ -71,7 +67,7 @@ def inspectVideos(video_dirS, output_results_dirS, output_fileS):
 
     videosL = os.listdir(video_dirS)
     videosL = sorted(videosL, key= lambda x: int(re.findall(r"collision(\d+)_", x)[0]))
-    output_file_pathS = os.path.join(configurations.output_dir, output_results_dirS, validation_results_dir, output_fileS)
+    output_file_pathS = os.path.join(output_results_dirS, validation_results_dir, output_fileS)
 
     pdb.set_trace()
     video_number = 0
@@ -115,4 +111,8 @@ def inspectVideos(video_dirS, output_results_dirS, output_fileS):
     print "finished!"
 
 if __name__ == "__main__":
-    inspectVideos("collision_vids", 'identity.csv')
+    d = docopt.docopt(__doc__)
+    currentUser = d['<username>']
+    results_dir_pathS = os.path.join(configurations.output_dir, d['<results_directory>'] )
+    ee = execfile
+    inspectVideos("collision_vids", results_dir_pathS, 'identity.csv')
