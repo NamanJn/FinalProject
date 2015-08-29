@@ -27,11 +27,13 @@ currentUser = d['<username>']
 results_directory = os.path.join(configurations.output_dir, d['<results_directory>'] )
 ee = execfile
 
+class InspectVideo(object):
+    pass
 
 def playVideo(videoNameS):
 
     counter = 0
-    cap = cv2.VideoCapture(os.path.join(videoDirS,videoS))
+    cap = cv2.VideoCapture(os.path.join(videoDirS, videoS))
     ret, frame = cap.read()
     cv2.imshow("image", frame)
     while True:
@@ -64,65 +66,53 @@ def playVideo(videoNameS):
             cv2.imshow("image", frame)
             counter += 1
      
+def inspectVideos(video_dirS, output_results_dirS, output_fileS):
 
-videoDirS = "collision_vids"
-videosL = os.listdir(videoDirS)
-videosL = sorted(videosL, key= lambda x: int(re.findall(r"collision(\d+)_", x)[0]))
-outputFilePathS = os.path.join(validation_results_dir, "identity.csv")
-pdb.set_trace()
 
-video_number = 0
-#for videoS in videosL[::-1]:
-while video_number < len(videosL):
-    # reading the video
-    #collisionFrame = 916 
-    #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
-    videoS = videosL[video_number]
-    collisionFrame = int(re.findall(r"collision(\d+)_", videoS)[0])
-    print "playing collision video:", videoS
-    playVideo(os.path.join(videoDirS, videoS))
+    videosL = os.listdir(video_dirS)
+    videosL = sorted(videosL, key= lambda x: int(re.findall(r"collision(\d+)_", x)[0]))
+    output_file_pathS = os.path.join(configurations.output_dir, output_results_dirS, validation_results_dir, output_fileS)
 
-    #frameROI = frame[ tube_y:tube_y+tube_height, tube_x:tube_x+tube_length ]
-    #tracker = Tracker(frame, num_of_flies=2)
+    pdb.set_trace()
+    video_number = 0
+    #for videoS in videosL[::-1]:
+    while video_number < len(videosL):
+        # reading the video
+        #collisionFrame = 916
+        #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
+        videoS = videosL[video_number]
 
-    # listener function
-    #positionsL = []
-    #def draw_circle(event,x,y,flags,param):
-    #    global cv2,frame,positionsL
-    #    print param
-    #    if event == cv2.EVENT_LBUTTONUP and len(positionsL) < param:
-    #        print x,y
-    #        positionsL.append([x,y])
-    #        print "Now positionsL is,", positionsL
-    #
-    ## binding listener to the image
-    #cv2.namedWindow('image')
-    #cv2.setMouseCallback('image', draw_circle, param=2)
+        collisionFrame = int(re.findall(r"collision(\d+)_", videoS)[0])
+        print "playing collision video:", videoS
+        playVideo(os.path.join(video_dirS, videoS))
 
-    # showing the first image and waiting for 2 clicks
 
-    while True:
-        x = raw_input("Did identities switch? [y/n/r/p]: ")
-        if x == "y" or x == "n":
+        # showing the first image and waiting for 2 clicks
+        while True:
+            x = raw_input("Did identities switch? [y/n/r/p]: ")
+            if x == "y" or x == "n":
 
-            if x == "y":
-                print "ok switched"
+                if x == "y":
+                    print "ok switched"
 
-            elif x == "n":
-                print "ok didn't switch"
+                elif x == "n":
+                    print "ok didn't switch"
 
-            video_number += 1
-            os.system("echo '%s,%s,%s' >> %s" % (collisionFrame, x, currentUser, outputFilePathS) )
-            break 
-        elif x == "r":
-            print "playing again chosen.... press a to continue"
-            playVideo(os.path.join(videoDirS, videoS))
-        elif x == "p":
-            print "playing previous video again chosen.... press a to continue"
-            video_number -= 1
-            videoS = videosL[::-1][video_number]
-            playVideo(os.path.join(videoDirS, videoS))
-        else:
-            print "try again"
+                video_number += 1
+                os.system("echo '%s,%s,%s' >> %s" % (collisionFrame, x, currentUser, output_file_pathS) )
+                break
+            elif x == "r":
+                print "playing again chosen.... press a to continue"
+                playVideo(os.path.join(video_dirS, videoS))
+            elif x == "p":
+                print "playing previous video again chosen.... press a to continue"
+                video_number -= 1
+                videoS = videosL[::-1][video_number]
+                playVideo(os.path.join(video_dirS, videoS))
+            else:
+                print "try again"
 
-print "finished!"
+    print "finished!"
+
+if __name__ == "__main__":
+    inspectVideos("collision_vids", 'identity.csv')
