@@ -93,6 +93,7 @@ class InspectVideos(object):
             elif x == "skip":
                 self.video_number += 1
                 print "skipping input"
+                break
 
             else:
                 print "try again"
