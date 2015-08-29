@@ -96,13 +96,23 @@ def readAndCreateRle(string):
     return rle
 
 
-def createComplexVideos(rle, twos, complex_collisionsL, results_dir, buffer_time):
+def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
 
-    source_directory = join(configurations.output_dir, results_dir, configurations.debug_images_dir)
+    results_dir_path = join(configurations.output_dir, user_dir) # user_dir the folder beneath the 'output' dir.
+    source_directory = join(results_dir_path, configurations.debug_images_dir)
+    annotations_file_path = join(results_dir_path,'annotations.csv')
+
     collisionLengthsL = []
+
+    counter = 0
     for i in complex_collisionsL:
+
         firstInterCollision = twos[i[2]-1]
+        num_of_collisions = i[1]
+
         lastInterCollision = twos[i[2]-1 + i[1]-1]
+
+
         startingCollision = rle[firstInterCollision[3]-1]
         if lastInterCollision[3] + 1 == len(rle):
             endingCollision = rle[lastInterCollision[3]-1]
@@ -113,10 +123,15 @@ def createComplexVideos(rle, twos, complex_collisionsL, results_dir, buffer_time
         collisionStartFrame = startingCollision[2]
 
         collisionLengthsL.append(collisionLength)
-        #pdb.set_trace()
+        collision_len_time = collisionLength/float(configurations.fps)
+
         createVideoFromImages(collisionStartFrame, collisionLength, source_directory, configurations.complex_video_dir, bufferTime=buffer_time)
-
-
+        if counter == 0:
+            pipe_string = ">"
+        else:
+            pipe_string = ">>"
+        os.system("echo '%s,%s,%s' %s %s" % (collisionStartFrame, num_of_collisions, collision_len_time, pipe_string, annotations_file_path))
+        counter +=1
 def createSimpleCollisionVideos(rle):
 
     simple_collisionsL = []
@@ -188,7 +203,7 @@ if __name__ == "__main__":
             complex_collisionsL.append(i)
 
     #createComplexVideos(rle, twos, complex_collisionsL)
-    collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL, buffer_time=2)
+    collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:10], user_dir, buffer_time=2)
     #collisionLengthsDistribution = Counter(collisionLengthsL)
     #print collisionLengthsDistribution
 
