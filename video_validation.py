@@ -24,7 +24,7 @@ import docopt
 
 
 class InspectVideos(object):
-    def __init__(self, video_dir_pathS, question, possible_answers, current_validator = 'someone'):
+    def __init__(self, video_dir_pathS, question, possible_answers, current_validator='someone'):
 
         self.video_dir_pathS = video_dir_pathS
         self.video_number = None
@@ -70,7 +70,7 @@ class InspectVideos(object):
     def askUserForAnswer(self):
 
         while True:
-            string_to_ask = "%s [%s/r/p]: " % (self.question, "/".join(self.possible_answers))
+            string_to_ask = "%s [%s/r/p/skip]: " % (self.question, "/".join(self.possible_answers))
             x = raw_input(string_to_ask)
 
             if x in self.possible_answers:
@@ -90,17 +90,21 @@ class InspectVideos(object):
                 self.video_number -= 1
                 self.current_videoS= self.videosL[::-1][self.video_number]
                 self.playVideo(os.path.join(self.video_dirS, self.current_videoS))
+            elif x == "skip":
+                self.video_number += 1
+                print "skipping input"
 
             else:
                 print "try again"
 
-    def inspectVideos(self, video_dirS, output_results_dirS, output_fileS):
+    def inspectVideos(self, video_dirS, output_results_dirS, output_fileS, regex=r"collision(\d+)_"):
 
         self.video_dirS = video_dirS
         self.videosL = os.listdir(video_dirS)
-        videosL = sorted(self.videosL, key= lambda x: int(re.findall(r"collision(\d+)_", x)[0]))
-        self.output_file_pathS = os.path.join(output_results_dirS, validation_results_dir, output_fileS)
-
+        pdb.set_trace()
+        videosL = sorted(self.videosL, key= lambda x: int(re.findall(regex, x)[0]))
+        self.output_file_pathS = os.path.join(configurations.output_dir, output_results_dirS, validation_results_dir, output_fileS)
+        print 'file to save answers is', self.output_file_pathS
         pdb.set_trace()
         self.video_number = 0
 
@@ -111,7 +115,7 @@ class InspectVideos(object):
             #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
             self.current_videoS = videosL[self.video_number]
 
-            self.collisionFrame = int(re.findall(r"collision(\d+)_", self.current_videoS)[0])
+            self.collisionFrame = int(re.findall(regex, self.current_videoS)[0])
             print "playing collision video:", self.current_videoS
             self.playVideo(os.path.join(video_dirS, self.current_videoS))
 
@@ -129,5 +133,5 @@ if __name__ == "__main__":
     currentUser = d['<username>']
     results_dir_pathS = os.path.join(configurations.output_dir, d['<results_directory>'] )
     ee = execfile
-    inspectVideo = InspectVideos("collision_vids/")
+    inspectVideo = InspectVideos("collision_vids/","did it switch?", ["y","n"])
     inspectVideo.inspectVideos("collision_vids", results_dir_pathS, 'identity.csv')
