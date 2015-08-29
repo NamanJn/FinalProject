@@ -24,95 +24,98 @@ import docopt
 
 
 class InspectVideo(object):
-    pass
+    def __init__(self, video_dir_pathS):
 
-def playVideo(video_pathS):
+        self.video_dir_pathS = video_dir_pathS
 
-    counter = 0
-    cap = cv2.VideoCapture(video_pathS)
-    ret, frame = cap.read()
-    cv2.imshow("image", frame)
-    while True:
-        print "press a to continue"
-        print "playing video", os.path.basename(video_pathS)
-        aKey = cv2.waitKey(0) 
-        if aKey == ord("a"):
-            break
+    def playVideo(self,video_pathS):
 
-
-    frame_shape = frame.shape
-    write_video = False 
-
-    while True:
-            breakloop = False
-
-            cv2.waitKey(100)
-            ret, frame = cap.read()
-            
-            if not ret:
-                while True:
-                    #aKey = cv2.waitKey(0) 
-                    #if aKey == ord("a"):
-                        breakloop = True
-                        break
-                             
-            if breakloop:
-                break
-
-            cv2.imshow("image", frame)
-            counter += 1
-     
-def inspectVideos(video_dirS, output_results_dirS, output_fileS):
-
-
-    videosL = os.listdir(video_dirS)
-    videosL = sorted(videosL, key= lambda x: int(re.findall(r"collision(\d+)_", x)[0]))
-    output_file_pathS = os.path.join(output_results_dirS, validation_results_dir, output_fileS)
-
-    pdb.set_trace()
-    video_number = 0
-    #for videoS in videosL[::-1]:
-    while video_number < len(videosL):
-        # reading the video
-        #collisionFrame = 916
-        #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
-        videoS = videosL[video_number]
-
-        collisionFrame = int(re.findall(r"collision(\d+)_", videoS)[0])
-        print "playing collision video:", videoS
-        playVideo(os.path.join(video_dirS, videoS))
-
-
-        # showing the first image and waiting for 2 clicks
+        counter = 0
+        cap = cv2.VideoCapture(video_pathS)
+        ret, frame = cap.read()
+        cv2.imshow("image", frame)
         while True:
-            x = raw_input("Did identities switch? [y/n/r/p]: ")
-            if x == "y" or x == "n":
-
-                if x == "y":
-                    print "ok switched"
-
-                elif x == "n":
-                    print "ok didn't switch"
-
-                video_number += 1
-                os.system("echo '%s,%s,%s' >> %s" % (collisionFrame, x, currentUser, output_file_pathS) )
+            print "press a to continue"
+            print "playing video", os.path.basename(video_pathS)
+            aKey = cv2.waitKey(0)
+            if aKey == ord("a"):
                 break
-            elif x == "r":
-                print "playing again chosen.... press a to continue"
-                playVideo(os.path.join(video_dirS, videoS))
-            elif x == "p":
-                print "playing previous video again chosen.... press a to continue"
-                video_number -= 1
-                videoS = videosL[::-1][video_number]
-                playVideo(os.path.join(video_dirS, videoS))
-            else:
-                print "try again"
 
-    print "finished!"
+
+        frame_shape = frame.shape
+        write_video = False
+
+        while True:
+                breakloop = False
+
+                cv2.waitKey(100)
+                ret, frame = cap.read()
+
+                if not ret:
+                    while True:
+                        #aKey = cv2.waitKey(0)
+                        #if aKey == ord("a"):
+                            breakloop = True
+                            break
+
+                if breakloop:
+                    break
+
+                cv2.imshow("image", frame)
+                counter += 1
+
+    def inspectVideos(self, video_dirS, output_results_dirS, output_fileS):
+
+
+        videosL = os.listdir(video_dirS)
+        videosL = sorted(videosL, key= lambda x: int(re.findall(r"collision(\d+)_", x)[0]))
+        output_file_pathS = os.path.join(output_results_dirS, validation_results_dir, output_fileS)
+
+        pdb.set_trace()
+        video_number = 0
+        #for videoS in videosL[::-1]:
+        while video_number < len(videosL):
+            # reading the video
+            #collisionFrame = 916
+            #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
+            videoS = videosL[video_number]
+
+            collisionFrame = int(re.findall(r"collision(\d+)_", videoS)[0])
+            print "playing collision video:", videoS
+            self.playVideo(os.path.join(video_dirS, videoS))
+
+
+            # showing the first image and waiting for 2 clicks
+            while True:
+                x = raw_input("Did identities switch? [y/n/r/p]: ")
+                if x == "y" or x == "n":
+
+                    if x == "y":
+                        print "ok switched"
+
+                    elif x == "n":
+                        print "ok didn't switch"
+
+                    video_number += 1
+                    os.system("echo '%s,%s,%s' >> %s" % (collisionFrame, x, currentUser, output_file_pathS) )
+                    break
+                elif x == "r":
+                    print "playing again chosen.... press a to continue"
+                    self.playVideo(os.path.join(video_dirS, videoS))
+                elif x == "p":
+                    print "playing previous video again chosen.... press a to continue"
+                    video_number -= 1
+                    videoS = videosL[::-1][video_number]
+                    self.playVideo(os.path.join(video_dirS, videoS))
+                else:
+                    print "try again"
+
+        print "finished!"
 
 if __name__ == "__main__":
     d = docopt.docopt(__doc__)
     currentUser = d['<username>']
     results_dir_pathS = os.path.join(configurations.output_dir, d['<results_directory>'] )
     ee = execfile
-    inspectVideos("collision_vids", results_dir_pathS, 'identity.csv')
+    inspectVideo = InspectVideo("collision_vids/")
+    inspectVideo.inspectVideos("collision_vids", results_dir_pathS, 'identity.csv')
