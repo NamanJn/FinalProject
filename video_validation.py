@@ -25,13 +25,14 @@ import pandas as pd
 
 
 class InspectVideos(object):
-    def __init__(self, video_dir_pathS, question, possible_answers, current_validator='someone'):
+    def __init__(self, video_dir_pathS, question, possible_answers, current_validator='someone', regex=r"collision(\d+)_"):
 
         self.video_dir_pathS = video_dir_pathS
         self.video_number = None
         self.question = question
         self.possible_answers = possible_answers
         self.current_validator = current_validator
+        self.regex = regex
 
     def playVideo(self, video_pathS):
 
@@ -99,13 +100,18 @@ class InspectVideos(object):
             else:
                 print "try again"
 
-    def inspectVideos(self, video_dirS, output_results_dirS, output_fileS, regex=r"collision(\d+)_"):
+    def inspectVideos(self, video_dirS, output_results_dirS, output_fileS, repeat_validation = True):
 
         self.video_dirS = video_dirS
         self.videosL = os.listdir(video_dirS)
-        pdb.set_trace()
-        videosL = sorted(self.videosL, key= lambda x: int(re.findall(regex, x)[0]))
+
+        if not repeat_validation:
+            self.videosL = self.getRemainingVideosToValidate()
+
+        videosL = sorted(self.videosL, key= lambda x: int(re.findall(self.regex, x)[0]))
+
         self.output_file_pathS = os.path.join(configurations.output_dir, output_results_dirS, validation_results_dir, output_fileS)
+
         print 'file to save answers is', self.output_file_pathS
         pdb.set_trace()
         self.video_number = 0
@@ -117,7 +123,7 @@ class InspectVideos(object):
             #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
             self.current_videoS = videosL[self.video_number]
 
-            self.collisionFrame = int(re.findall(regex, self.current_videoS)[0])
+            self.collisionFrame = int(re.findall(self.regex, self.current_videoS)[0])
             print "playing collision video:", self.current_videoS
             self.playVideo(os.path.join(video_dirS, self.current_videoS))
 
@@ -127,10 +133,21 @@ class InspectVideos(object):
         print "finished!"
 
     def getRemainingVideosToValidate(self):
-        annotated_file_pd = pd.read_csv(self.output_file_pathS, header=None)
-        max_video_annotated = max(annotated_file_pd.values[:, 0])
+        max_video_annotated = 0
+        try:
+            annotated_file_pd = pd.read_csv(self.output_file_pathS, header=None)
+            max_video_annotated = max(annotated_file_pd.values[:, 0])
+        except:
+            pass
+        remaining_videosL = []
+        pdb.set_trace()
+        for videoS in self.videosL:
+            video_collision_frame = int(re.findall(self.regex, videoS)[0])
+            if video_collision_frame > max_video_annotated:
+                remaining_videosL.append(videoS)
 
-        return annotated_file_pd
+
+        return remaining_videosL
 
 
 class InspectComplexVideos(InspectVideos):

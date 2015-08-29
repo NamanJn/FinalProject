@@ -203,7 +203,7 @@ if __name__ == "__main__":
             complex_collisionsL.append(i)
 
     #createComplexVideos(rle, twos, complex_collisionsL)
-    collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:10], user_dir, buffer_time=2)
+    collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:103], user_dir, buffer_time=2)
     #collisionLengthsDistribution = Counter(collisionLengthsL)
     #print collisionLengthsDistribution
 

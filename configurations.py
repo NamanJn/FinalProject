@@ -53,4 +53,4 @@ rle_data_file = os.path.join(data_dir, "csv.csv")
 data_file = os.path.join(data_dir, "data.csv")
 
 # This is to create the simple and complex collisions.
-interCollisionTime = 1 # This is in seconds
+interCollisionTime = 2 # This is in seconds
