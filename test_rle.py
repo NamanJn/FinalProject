@@ -96,7 +96,9 @@ def readAndCreateRle(string):
     return rle
 
 
-def createComplexVideos(rle, twos, complex_collisionsL):
+def createComplexVideos(rle, twos, complex_collisionsL, results_dir, buffer_time):
+
+    source_directory = join(configurations.output_dir, results_dir, configurations.debug_images_dir)
     collisionLengthsL = []
     for i in complex_collisionsL:
         firstInterCollision = twos[i[2]-1]
@@ -112,7 +114,7 @@ def createComplexVideos(rle, twos, complex_collisionsL):
 
         collisionLengthsL.append(collisionLength)
         #pdb.set_trace()
-        createVideoFromImages(collisionStartFrame, collisionLength, configurations.debug_images_dir, configurations.complex_video_dir)
+        createVideoFromImages(collisionStartFrame, collisionLength, source_directory, configurations.complex_video_dir, bufferTime=buffer_time)
 
 
 def createSimpleCollisionVideos(rle):
@@ -147,15 +149,15 @@ def createCollisionVideos():
         if collisionStartFrame > 300:
             cutContourVideo(collisionStartFrame, collisionLength)
 
-def createVideoFromImages(startFrame, collisionLength, directory, sinkDirectory, bufferTime = 10 ):
+def createVideoFromImages(startFrame, collisionLength, source_directory, sinkDirectory, bufferTime=1 ):
 
-    imageDirectory = directory
+    imageDirectory = source_directory
 
     fps = configurations.fps
+    buffer_time_frames = int(bufferTime*fps)
+    videoStartFrame = startFrame - buffer_time_frames
 
-    videoStartFrame = startFrame - bufferTime
-
-    collisionLengthWithBuffer = collisionLength + 2*bufferTime
+    collisionLengthWithBuffer = collisionLength + 2*buffer_time_frames
     stringToExecute = 'ffmpeg -start_number %s -framerate %s -i %s/frame%%d.png -vframes %s -vcodec mpeg4 %s/collision%s.mp4 -y' % (videoStartFrame,
                                                                                                                        fps,
                                                                                                                        imageDirectory,
@@ -167,7 +169,7 @@ def createVideoFromImages(startFrame, collisionLength, directory, sinkDirectory,
 if __name__ == "__main__":
 
     user_dir = "tube4"
-    results_dir = os.path.join(configurations.output_dir,"tube4")
+    results_dir = os.path.join(configurations.output_dir, user_dir)
     rle = readAndCreateRle(join(results_dir, configurations.rle_data_file))
 
     ones = [ i for i in rle if i[0] == "1" ]
@@ -186,7 +188,7 @@ if __name__ == "__main__":
             complex_collisionsL.append(i)
 
     #createComplexVideos(rle, twos, complex_collisionsL)
-    collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL)
+    collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL, buffer_time=2)
     #collisionLengthsDistribution = Counter(collisionLengthsL)
     #print collisionLengthsDistribution
 
