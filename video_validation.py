@@ -15,6 +15,7 @@ from configurations import validation_results_dir
 import configurations
 import re
 import docopt
+import pandas as pd
 # This script's aim is to get input from a user
 # whether the tracking system switched the identity or no
 # Ths userinput will just be "yes" or "no".
@@ -123,8 +124,14 @@ class InspectVideos(object):
             # showing the first image and waiting for 2 clicks
             self.askUserForAnswer()
 
-
         print "finished!"
+
+    def getRemainingVideosToValidate(self):
+        annotated_file_pd = pd.read_csv(self.output_file_pathS, header=None)
+        max_video_annotated = max(annotated_file_pd.values[:, 0])
+
+        return annotated_file_pd
+
 
 class InspectComplexVideos(InspectVideos):
     pass
