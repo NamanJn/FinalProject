@@ -27,7 +27,7 @@ class InspectVideo(object):
     def __init__(self, video_dir_pathS):
 
         self.video_dir_pathS = video_dir_pathS
-
+        self.video_number = None
     def playVideo(self,video_pathS):
 
         counter = 0
@@ -66,26 +66,31 @@ class InspectVideo(object):
 
     def inspectVideos(self, video_dirS, output_results_dirS, output_fileS):
 
-
-        videosL = os.listdir(video_dirS)
-        videosL = sorted(videosL, key= lambda x: int(re.findall(r"collision(\d+)_", x)[0]))
-        output_file_pathS = os.path.join(output_results_dirS, validation_results_dir, output_fileS)
+        self.video_dirS = video_dirS
+        self.videosL = os.listdir(video_dirS)
+        videosL = sorted(self.videosL, key= lambda x: int(re.findall(r"collision(\d+)_", x)[0]))
+        self.output_file_pathS = os.path.join(output_results_dirS, validation_results_dir, output_fileS)
 
         pdb.set_trace()
-        video_number = 0
+        self.video_number = 0
+
         #for videoS in videosL[::-1]:
-        while video_number < len(videosL):
+        while self.video_number < len(videosL):
             # reading the video
             #collisionFrame = 916
             #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
-            videoS = videosL[video_number]
+            videoS = videosL[self.video_number]
 
-            collisionFrame = int(re.findall(r"collision(\d+)_", videoS)[0])
+            self.collisionFrame = int(re.findall(r"collision(\d+)_", videoS)[0])
             print "playing collision video:", videoS
             self.playVideo(os.path.join(video_dirS, videoS))
 
-
+            self.askUserForAnswer()
             # showing the first image and waiting for 2 clicks
+
+        print "finished!"
+
+    def askUserForAnswer(self):
             while True:
                 x = raw_input("Did identities switch? [y/n/r/p]: ")
                 if x == "y" or x == "n":
@@ -96,21 +101,21 @@ class InspectVideo(object):
                     elif x == "n":
                         print "ok didn't switch"
 
-                    video_number += 1
-                    os.system("echo '%s,%s,%s' >> %s" % (collisionFrame, x, currentUser, output_file_pathS) )
+                    self.video_number += 1
+                    os.system("echo '%s,%s,%s' >> %s" % (self.collisionFrame, x, currentUser, self.output_file_pathS))
                     break
                 elif x == "r":
                     print "playing again chosen.... press a to continue"
-                    self.playVideo(os.path.join(video_dirS, videoS))
+                    self.playVideo(os.path.join(self.video_dirS, videoS))
                 elif x == "p":
                     print "playing previous video again chosen.... press a to continue"
-                    video_number -= 1
-                    videoS = videosL[::-1][video_number]
-                    self.playVideo(os.path.join(video_dirS, videoS))
+                    self.video_number -= 1
+                    videoS = self.videosL[::-1][self.video_number]
+                    self.playVideo(os.path.join(self.video_dirS, videoS))
                 else:
                     print "try again"
 
-        print "finished!"
+
 
 if __name__ == "__main__":
     d = docopt.docopt(__doc__)
