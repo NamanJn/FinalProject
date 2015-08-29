@@ -23,12 +23,16 @@ import docopt
 
 
 
-class InspectVideo(object):
-    def __init__(self, video_dir_pathS):
+class InspectVideos(object):
+    def __init__(self, video_dir_pathS, question, possible_answers, current_validator = 'someone'):
 
         self.video_dir_pathS = video_dir_pathS
         self.video_number = None
-    def playVideo(self,video_pathS):
+        self.question = question
+        self.possible_answers = possible_answers
+        self.current_validator = current_validator
+
+    def playVideo(self, video_pathS):
 
         counter = 0
         cap = cv2.VideoCapture(video_pathS)
@@ -40,7 +44,6 @@ class InspectVideo(object):
             aKey = cv2.waitKey(0)
             if aKey == ord("a"):
                 break
-
 
         frame_shape = frame.shape
         write_video = False
@@ -64,6 +67,33 @@ class InspectVideo(object):
                 cv2.imshow("image", frame)
                 counter += 1
 
+    def askUserForAnswer(self):
+
+        while True:
+            string_to_ask = "%s [%s/r/p]: " % (self.question, "/".join(self.possible_answers))
+            x = raw_input(string_to_ask)
+
+            if x in self.possible_answers:
+
+                print "ok you gave the answer of ", x
+                self.video_number += 1
+                os.system("echo '%s,%s,%s' >> %s" % (self.collisionFrame, x, self.current_validator, self.output_file_pathS))
+                break
+
+            elif x == "r":
+                print "playing again chosen.... press a to continue"
+                current_video_pathS = os.path.join(self.video_dirS, self.current_videoS)
+                self.playVideo(current_video_pathS)
+
+            elif x == "p":
+                print "playing previous video again chosen.... press a to continue"
+                self.video_number -= 1
+                self.current_videoS= self.videosL[::-1][self.video_number]
+                self.playVideo(os.path.join(self.video_dirS, self.current_videoS))
+
+            else:
+                print "try again"
+
     def inspectVideos(self, video_dirS, output_results_dirS, output_fileS):
 
         self.video_dirS = video_dirS
@@ -79,48 +109,25 @@ class InspectVideo(object):
             # reading the video
             #collisionFrame = 916
             #cap = cv2.VideoCapture("collision_vids/collision%s_withcontours.mp4" % collisionFrame)
-            videoS = videosL[self.video_number]
+            self.current_videoS = videosL[self.video_number]
 
-            self.collisionFrame = int(re.findall(r"collision(\d+)_", videoS)[0])
-            print "playing collision video:", videoS
-            self.playVideo(os.path.join(video_dirS, videoS))
+            self.collisionFrame = int(re.findall(r"collision(\d+)_", self.current_videoS)[0])
+            print "playing collision video:", self.current_videoS
+            self.playVideo(os.path.join(video_dirS, self.current_videoS))
 
-            self.askUserForAnswer()
             # showing the first image and waiting for 2 clicks
+            self.askUserForAnswer()
+
 
         print "finished!"
 
-    def askUserForAnswer(self):
-            while True:
-                x = raw_input("Did identities switch? [y/n/r/p]: ")
-                if x == "y" or x == "n":
-
-                    if x == "y":
-                        print "ok switched"
-
-                    elif x == "n":
-                        print "ok didn't switch"
-
-                    self.video_number += 1
-                    os.system("echo '%s,%s,%s' >> %s" % (self.collisionFrame, x, currentUser, self.output_file_pathS))
-                    break
-                elif x == "r":
-                    print "playing again chosen.... press a to continue"
-                    self.playVideo(os.path.join(self.video_dirS, videoS))
-                elif x == "p":
-                    print "playing previous video again chosen.... press a to continue"
-                    self.video_number -= 1
-                    videoS = self.videosL[::-1][self.video_number]
-                    self.playVideo(os.path.join(self.video_dirS, videoS))
-                else:
-                    print "try again"
-
-
+class InspectComplexVideos(InspectVideos):
+    pass
 
 if __name__ == "__main__":
     d = docopt.docopt(__doc__)
     currentUser = d['<username>']
     results_dir_pathS = os.path.join(configurations.output_dir, d['<results_directory>'] )
     ee = execfile
-    inspectVideo = InspectVideo("collision_vids/")
+    inspectVideo = InspectVideos("collision_vids/")
     inspectVideo.inspectVideos("collision_vids", results_dir_pathS, 'identity.csv')
