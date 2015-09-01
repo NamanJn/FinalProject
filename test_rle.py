@@ -229,7 +229,10 @@ if __name__ == "__main__":
     # plotting the graph
     df = pd.DataFrame(heightsForBarChart)
     ax = df.plot(kind="bar")
-    ax.set_xticklabels([str(i/float(10)) for i in range(1, 24)]+[">2.3"])
+
+    fps = configurations.fps
+    lastValue = str((thresholdForGrouping - 1)/float(fps))
+    ax.set_xticklabels([str(i/float(fps)) for i in range(1, thresholdForGrouping)]+[">  %s" % lastValue])
     ax.legend_.remove()
     sns.plt.xlabel("Collision length (seconds)")
     sns.plt.ylabel("Frequency")
