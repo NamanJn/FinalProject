@@ -230,8 +230,9 @@ if __name__ == "__main__":
     df = pd.DataFrame(heightsForBarChart)
     ax = df.plot(kind="bar")
     ax.set_xticklabels([str(i/float(10)) for i in range(1, 24)]+[">23"])
+    ax.legend_.remove()
     sns.plt.xlabel("Collision length (seconds)")
     sns.plt.ylabel("Frequency")
-    sns.plt.savefig("seaborn.png")
+    sns.plt.savefig("collisionLengthDistribution.png")
     #collisionLengthsDistribution = Counter(collisionLengthsL)
 
