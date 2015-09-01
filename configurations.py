@@ -36,6 +36,9 @@ complex_video_dir = "complex_collision_vids"
 # simple video directory
 simple_collision_dir = "simple_collision_vids"
 
+# simple video directory
+collision_dir = "collision_vids"
+
 # results output directory
 output_dir = "output"
 # data set column names

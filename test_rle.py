@@ -132,6 +132,7 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
             pipe_string = ">>"
         os.system("echo '%s,%s,%s' %s %s" % (collisionStartFrame, num_of_collisions, collision_len_time, pipe_string, annotations_file_path))
         counter +=1
+
 def createSimpleCollisionVideos(rle):
 
     simple_collisionsL = []
@@ -150,19 +151,20 @@ def createSimpleCollisionVideos(rle):
                 createVideoFromImages(item[2], item[1], configurations.debug_images_dir, configurations.simple_collision_dir)
 
 
-def createCollisionVideos():
+def createCollisionVideos(source_dir_pathS, sink_dir_pathS):
 
     fileNameS = configurations.rle_data_file
     rle = readAndCreateRle(fileNameS)
 
-    ones = [ i for i in rle if i[0] == "1" ]
+    ones = [i for i in rle if i[0] == "1"]
     print ones
 
     #cutvideo(663, 8)
     # creating chunks of the videos.
     for i, collisionLength, collisionStartFrame, index in ones:
         if collisionStartFrame > 300:
-            cutContourVideo(collisionStartFrame, collisionLength)
+            createVideoFromImages(collisionStartFrame, collisionLength, source_dir_pathS, sink_dir_pathS)
+            #cutContourVideo(collisionStartFrame, collisionLength)
 
 def createVideoFromImages(startFrame, collisionLength, source_directory, sinkDirectory, bufferTime=1 ):
 
@@ -202,8 +204,13 @@ if __name__ == "__main__":
         if i[0] == True and i[1] > 1:
             complex_collisionsL.append(i)
 
-    #createComplexVideos(rle, twos, complex_collisionsL)
-    collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:103], user_dir, buffer_time=2)
+
+    source_dir_pathS = os.path.join(results_dir, configurations.debug_images_dir)
+    sink_dir_pathS = configurations.collision_dir
+    createCollisionVideos(source_dir_pathS=source_dir_pathS, sink_dir_pathS=sink_dir_pathS)
+
+    # This is to create the videos.
+    #collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:103], user_dir, buffer_time=2)
+
     #collisionLengthsDistribution = Counter(collisionLengthsL)
-    #print collisionLengthsDistribution
 
