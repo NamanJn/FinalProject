@@ -6,6 +6,9 @@ import pdb
 import configurations
 from collections import Counter
 from os.path import join
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 
 def myencode(string):
     
@@ -151,7 +154,7 @@ def createSimpleCollisionVideos(rle):
                 createVideoFromImages(item[2], item[1], configurations.debug_images_dir, configurations.simple_collision_dir)
 
 
-def createCollisionVideos(source_dir_pathS, sink_dir_pathS):
+def createCollisionVideos(source_dir_pathS, sink_dir_pathS, threshold_for_short):
 
     fileNameS = configurations.rle_data_file
     rle = readAndCreateRle(fileNameS)
@@ -163,10 +166,13 @@ def createCollisionVideos(source_dir_pathS, sink_dir_pathS):
     # creating chunks of the videos.
     for i, collisionLength, collisionStartFrame, index in ones:
         if collisionStartFrame > 300:
-            createVideoFromImages(collisionStartFrame, collisionLength, source_dir_pathS, sink_dir_pathS)
+            video_suffix = ""
+            if collisionLength <= threshold_for_short:
+                video_suffix = "_short"
+            createVideoFromImages(collisionStartFrame, collisionLength, source_dir_pathS, sink_dir_pathS, video_suffix=video_suffix)
             #cutContourVideo(collisionStartFrame, collisionLength)
 
-def createVideoFromImages(startFrame, collisionLength, source_directory, sinkDirectory, bufferTime=1 ):
+def createVideoFromImages(startFrame, collisionLength, source_directory, sinkDirectory, bufferTime=1 , video_suffix=""):
 
     imageDirectory = source_directory
 
@@ -175,11 +181,11 @@ def createVideoFromImages(startFrame, collisionLength, source_directory, sinkDir
     videoStartFrame = startFrame - buffer_time_frames
 
     collisionLengthWithBuffer = collisionLength + 2*buffer_time_frames
-    stringToExecute = 'ffmpeg -start_number %s -framerate %s -i %s/frame%%d.png -vframes %s -vcodec mpeg4 %s/collision%s.mp4 -y' % (videoStartFrame,
+    stringToExecute = 'ffmpeg -start_number %s -framerate %s -i %s/frame%%d.png -vframes %s -vcodec mpeg4 %s/collision%s%s.mp4 -y' % (videoStartFrame,
                                                                                                                        fps,
                                                                                                                        imageDirectory,
                                                                                                                        collisionLengthWithBuffer,
-    sinkDirectory, startFrame)
+    sinkDirectory, startFrame,video_suffix)
 
     os.system(stringToExecute)
 
@@ -207,10 +213,25 @@ if __name__ == "__main__":
 
     source_dir_pathS = os.path.join(results_dir, configurations.debug_images_dir)
     sink_dir_pathS = configurations.collision_dir
-    createCollisionVideos(source_dir_pathS=source_dir_pathS, sink_dir_pathS=sink_dir_pathS)
+    #createCollisionVideos(source_dir_pathS=source_dir_pathS, sink_dir_pathS=sink_dir_pathS, threshold_for_short=3)
 
     # This is to create the videos.
     #collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:103], user_dir, buffer_time=2)
+    collisionLengthsL = [i[1] for i in ones]
+    moreThan23L = []
+    thresholdForGrouping = 24
+    for i in collisionLengthsL:
+        if i >= thresholdForGrouping: moreThan23L.append(thresholdForGrouping)
+        else: moreThan23L.append(i)
 
+    heightsForBarChart = dict(Counter(moreThan23L)).values()
+
+    # plotting the graph
+    df = pd.DataFrame(heightsForBarChart)
+    ax = df.plot(kind="bar")
+    ax.set_xticklabels(range(1, 25))
+    sns.plt.xlabel("Collision length (seconds)")
+    sns.plt.ylabel("Frequency")
+    sns.plt.savefig("seaborn.png")
     #collisionLengthsDistribution = Counter(collisionLengthsL)
 
