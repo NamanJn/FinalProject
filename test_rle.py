@@ -229,7 +229,7 @@ if __name__ == "__main__":
     # plotting the graph
     df = pd.DataFrame(heightsForBarChart)
     ax = df.plot(kind="bar")
-    ax.set_xticklabels(range(1, 25))
+    ax.set_xticklabels([str(i/float(10)) for i in range(1, 24)]+[">23"])
     sns.plt.xlabel("Collision length (seconds)")
     sns.plt.ylabel("Frequency")
     sns.plt.savefig("seaborn.png")
