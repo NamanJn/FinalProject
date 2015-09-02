@@ -103,7 +103,7 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
 
     results_dir_path = join(configurations.output_dir, user_dir) # user_dir the folder beneath the 'output' dir.
     source_directory = join(results_dir_path, configurations.debug_images_dir)
-    annotations_file_path = join(results_dir_path,'annotations.csv')
+    annotations_file_path = join(results_dir_path, 'annotations.csv')
 
     collisionLengthsL = []
 
@@ -122,6 +122,7 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
         else:
             endingCollision = rle[lastInterCollision[3]+1]
 
+        pdb.set_trace()
         collisionLength = endingCollision[2]+endingCollision[1] - startingCollision[2] + 1
         collisionStartFrame = startingCollision[2]
 
@@ -189,6 +190,37 @@ def createVideoFromImages(startFrame, collisionLength, source_directory, sinkDir
 
     os.system(stringToExecute)
 
+def createHistogramOfCollisionLengths():
+
+    # This creates a histogram of the collision lengths
+    user_dir = "tube4"
+    results_dir = os.path.join(configurations.output_dir, user_dir)
+    rle = readAndCreateRle(join(results_dir, configurations.rle_data_file))
+    ones = [ i for i in rle if i[0] == "1" ]
+
+    collisionLengthsL = [i[1] for i in ones]
+    moreThan23L = []
+    thresholdForGrouping = 24
+    for i in collisionLengthsL:
+        if i >= thresholdForGrouping: moreThan23L.append(thresholdForGrouping)
+        else: moreThan23L.append(i)
+
+    heightsForBarChart = dict(Counter(moreThan23L)).values()
+
+    # plotting the graph
+    df = pd.DataFrame(heightsForBarChart)
+    ax = df.plot(kind="bar")
+
+    fps = configurations.fps
+    lastValue = str((thresholdForGrouping - 1)/float(fps))
+    ax.set_xticklabels([str(i/float(fps)) for i in range(1, thresholdForGrouping)]+[">  %s" % lastValue])
+    ax.legend_.remove()
+    sns.plt.xlabel("Collision length (seconds)")
+    sns.plt.ylabel("Frequency")
+    sns.plt.tight_layout()
+    sns.plt.savefig("collisionLengthDistribution.png")
+    #collisionLengthsDistribution = Counter(collisionLengthsL)
+
 if __name__ == "__main__":
 
     user_dir = "tube4"
@@ -217,25 +249,7 @@ if __name__ == "__main__":
 
     # This is to create the videos.
     #collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:103], user_dir, buffer_time=2)
-    collisionLengthsL = [i[1] for i in ones]
-    moreThan23L = []
-    thresholdForGrouping = 24
-    for i in collisionLengthsL:
-        if i >= thresholdForGrouping: moreThan23L.append(thresholdForGrouping)
-        else: moreThan23L.append(i)
 
-    heightsForBarChart = dict(Counter(moreThan23L)).values()
 
-    # plotting the graph
-    df = pd.DataFrame(heightsForBarChart)
-    ax = df.plot(kind="bar")
 
-    fps = configurations.fps
-    lastValue = str((thresholdForGrouping - 1)/float(fps))
-    ax.set_xticklabels([str(i/float(fps)) for i in range(1, thresholdForGrouping)]+[">  %s" % lastValue])
-    ax.legend_.remove()
-    sns.plt.xlabel("Collision length (seconds)")
-    sns.plt.ylabel("Frequency")
-    sns.plt.savefig("collisionLengthDistribution.png")
-    #collisionLengthsDistribution = Counter(collisionLengthsL)
 
