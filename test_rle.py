@@ -98,12 +98,53 @@ def readAndCreateRle(string):
 
     return rle
 
+def getInterCollisionsFromDataFile(user_dir):
+
+    # right now this function only gets in the area
+    results_dir_path = join(configurations.output_dir, user_dir) # user_dir the folder beneath the 'output' dir.
+    data_file_path = join(results_dir, configurations.data_file)
+    interCollisionsAreaL = []
+    dF = pd.read_csv(data_file_path, names=configurations.col_names)
+
+    num_of_rows = dF.shape[0]
+
+    tempo = []
+    counter = 0
+    values = dF.values
+
+    # finding the width to check whether it occurs during a collision or no.
+    widthIndex = configurations.col_names.index('width')
+    areaIndex = configurations.col_names.index('area')
+
+    for rowIndexI in range(num_of_rows):
+        #theRow = dF.iloc[rowIndexI, :]
+        theRow = values[rowIndexI, :]
+
+        # theWidth = theRow.width
+        # theArea = theRow.area
+        theWidth = theRow[widthIndex]
+        theArea = theRow[areaIndex]
+
+        if theWidth == configurations.collision_value:
+            if tempo != []:
+                interCollisionsAreaL.append(tempo)
+            tempo = []
+        else:
+            tempo.append(theArea)
+
+        counter += 1
+        print counter
+        if counter > 170: pdb.set_trace()
+
+
+    return interCollisionsAreaL
 
 def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
 
     results_dir_path = join(configurations.output_dir, user_dir) # user_dir the folder beneath the 'output' dir.
     source_directory = join(results_dir_path, configurations.debug_images_dir)
     annotations_file_path = join(results_dir_path, 'annotations.csv')
+    data_file_path = join(results_dir_path, configurations.data_file)
 
     collisionLengthsL = []
 
@@ -120,7 +161,7 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
 
         lengthOfInterCollisions = [item[1] for item in twos[indexOfFirstInterCollision:indexOfLastInterCollision+1]]
         averageLengthOfInterCollisions = sum(lengthOfInterCollisions)/float(len(lengthOfInterCollisions))
-        
+
 
         startingCollision = rle[firstInterCollision[3]-1]
         if lastInterCollision[3] + 1 == len(rle):
@@ -255,8 +296,8 @@ if __name__ == "__main__":
     #createCollisionVideos(source_dir_pathS=source_dir_pathS, sink_dir_pathS=sink_dir_pathS, threshold_for_short=3)
 
     # This is to create the videos.
-    collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:103], user_dir, buffer_time=2)
-
+    #collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:103], user_dir, buffer_time=2)
+    interCollisionsAreaL = getInterCollisionsFromDataFile(user_dir)
 
 
 
