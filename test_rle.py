@@ -139,6 +139,45 @@ def getInterCollisionsFromDataFile(user_dir):
 
     return interCollisionsAreaL
 
+def getCollisionAreas(user_dir):
+    results_dir_path = join(configurations.output_dir, user_dir) # user_dir the folder beneath the 'output' dir.
+    data_file_path = join(results_dir, configurations.data_file)
+    interCollisionsAreaL = []
+    dF = pd.read_csv(data_file_path, names=configurations.col_names)
+
+    num_of_rows = dF.shape[0]
+
+    tempo = []
+    counter = 0
+    values = dF.values
+
+    # finding the width to check whether it occurs during a collision or no.
+    widthIndex = configurations.col_names.index('width')
+    areaIndex = configurations.col_names.index('area')
+
+    for rowIndexI in range(num_of_rows):
+        #theRow = dF.iloc[rowIndexI, :]
+        theRow = values[rowIndexI, :]
+
+        # theWidth = theRow.width
+        # theArea = theRow.area
+        theWidth = theRow[widthIndex]
+        theArea = theRow[areaIndex]
+
+        if theWidth != configurations.collision_value:
+            if tempo != []:
+                interCollisionsAreaL.append(tempo)
+            tempo = []
+        else:
+            tempo.append(theArea)
+
+        counter += 1
+        print counter
+        if counter > 170: pdb.set_trace()
+
+    return interCollisionsAreaL
+
+
 def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
 
     results_dir_path = join(configurations.output_dir, user_dir) # user_dir the folder beneath the 'output' dir.
@@ -183,7 +222,7 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
         else:
             pipe_string = ">>"
         os.system("echo '%s,%s,%s,%s' %s %s" % (collisionStartFrame, num_of_collisions, collision_len_time, averageLengthOfInterCollisions, pipe_string, annotations_file_path))
-        counter +=1
+        counter += 1
 
 def createSimpleCollisionVideos(rle):
 
@@ -238,10 +277,10 @@ def createVideoFromImages(startFrame, collisionLength, source_directory, sinkDir
 
     os.system(stringToExecute)
 
-def createHistogramOfCollisionLengths():
+def createHistogramOfCollisionLengths(user_dir):
 
     # This creates a histogram of the collision lengths
-    user_dir = "tube4"
+
     results_dir = os.path.join(configurations.output_dir, user_dir)
     rle = readAndCreateRle(join(results_dir, configurations.rle_data_file))
     ones = [ i for i in rle if i[0] == "1" ]
