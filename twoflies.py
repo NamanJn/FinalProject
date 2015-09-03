@@ -262,6 +262,12 @@ class Tracker(object):
 
             if self.writeRawImages: self.writeRawImagesWithNumbers(self.stitchImages([rawImg]))
         else:
+            if len(positions) == 1:
+                widthIndex = configurations.col_names[:2].index("width")
+                for i in ["1", "2"]:
+                    positions_proper[i] = [configurations.collision_value]*5
+                    positions_proper[i][widthIndex] = bigAndFlyContourAreas[0]
+
             self.collisionLength += 1
 
 
