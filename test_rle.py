@@ -310,19 +310,26 @@ def createHistogramOfCollisionLengths(user_dir):
 
     heightsForBarChart = dict(Counter(moreThan23L)).values()
 
-    # plotting the graph
-    df = pd.DataFrame(heightsForBarChart)
-    ax = df.plot(kind="bar")
-
     fps = configurations.fps
     lastValue = str((thresholdForGrouping - 1)/float(fps))
-    ax.set_xticklabels([str(i/float(fps)) for i in range(1, thresholdForGrouping)]+[">  %s" % lastValue])
+    xAxisLabelsL = [str(i/float(fps)) for i in range(1, thresholdForGrouping)]+[">  %s" % lastValue]
+
+    # plotting the graph
+    createHistogram("collisionLengthDistribution.png", heightsForBarChart, "Collision length (seconds)",
+                    "Frequency", xAxisLabelsL=xAxisLabelsL)
+
+def createHistogram(histogramNameS, dataL, xAxisTitleS, yAxisTitleS, xAxisLabelsL ):
+
+    df = pd.DataFrame(dataL)
+    ax = df.plot(kind="bar")
+
+    ax.set_xticklabels(xAxisLabelsL)
     ax.legend_.remove()
-    sns.plt.xlabel("Collision length (seconds)")
-    sns.plt.ylabel("Frequency")
+    sns.plt.xlabel(xAxisTitleS)
+    sns.plt.ylabel(yAxisTitleS)
     sns.plt.tight_layout()
-    sns.plt.savefig("collisionLengthDistribution.png")
-    #collisionLengthsDistribution = Counter(collisionLengthsL)
+    sns.plt.savefig(histogramNameS)
+
 
 if __name__ == "__main__":
 
