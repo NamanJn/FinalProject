@@ -41,8 +41,11 @@ collision_dir = "collision_vids"
 
 # results output directory
 output_dir = "output"
+
 # data set column names
-col_names = ['frame_number', 'fly', 'positionx', 'positiony', 'area', 'grayscale', 'width']
+fly_featuresL = ['positionx', 'positiony', 'area', 'grayscale', 'width']
+col_names = ['frame_number', 'fly'] + fly_featuresL
+num_of_features = len(fly_featuresL)
 
 # column values for collision rows
 collision_value = 50
