@@ -289,7 +289,7 @@ class Tracker(object):
 
         stitched = self.stitchImages(imagesToShowL)
 
-        if self.counter > 0: # don't get rid of this
+        if self.counter < 0: # don't get rid of this
             # adding key handlers and showign the stitched image
             cv2.imshow("stitched", stitched)
             self.addKeyHandlers()
@@ -304,7 +304,7 @@ class Tracker(object):
         self.writeImages(self.stitchImages(imagesForVideoL), self.debug_imgs_dir)
 
         # test_masked = 300
-        # if self.counter % test_masked == 0: pdb.set_trace()
+        #if self.counter > 200: pdb.set_trace()
 
         # if len(bigcontours) >= 3:
         #     pdb.set_trace()

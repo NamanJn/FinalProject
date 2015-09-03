@@ -65,5 +65,5 @@ def runTracker(videoNameS, outputdirNameS, tube_x=70, tube_height=23,
 
 if __name__ == "__main__":
 
-    runTracker('videos/2flies_4hours_10fps.mp4', outputdirNameS='retest_tube4')
+    runTracker('videos/2flies_4hours_10fps.mp4', outputdirNameS='tube4_3thSep')
 
