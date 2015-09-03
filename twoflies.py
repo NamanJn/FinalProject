@@ -263,10 +263,11 @@ class Tracker(object):
             if self.writeRawImages: self.writeRawImagesWithNumbers(self.stitchImages([rawImg]))
         else:
             if len(positions) == 1:
-                widthIndex = configurations.col_names[:2].index("width")
-                for i in ["1", "2"]:
+                areaIndex = configurations.fly_featuresL.index("area")
+                for i in ["1", "2"]: # adding the area of the single blob
                     positions_proper[i] = [configurations.collision_value]*configurations.num_of_features
-                    positions_proper[i][widthIndex] = bigAndFlyContourAreas[0]
+                    if len(bigAndFlyContourAreas) != 1: raise ValueError("the number of positions and areas are not equal.")
+                    positions_proper[i][areaIndex] = bigAndFlyContourAreas[0]
 
             self.collisionLength += 1
 
