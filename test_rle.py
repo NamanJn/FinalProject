@@ -110,11 +110,17 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
     counter = 0
     for i in complex_collisionsL:
 
-        firstInterCollision = twos[i[2]-1]
-        num_of_collisions = i[1]
+        indexOfFirstInterCollision = i[2]-1
+        indexOfLastInterCollision = i[2]-1 + i[1]-1
 
-        lastInterCollision = twos[i[2]-1 + i[1]-1]
+        firstInterCollision = twos[indexOfFirstInterCollision]
+        lastInterCollision = twos[indexOfLastInterCollision]
 
+        num_of_collisions = i[1]+1
+
+        lengthOfInterCollisions = [item[1] for item in twos[indexOfFirstInterCollision:indexOfLastInterCollision+1]]
+        averageLengthOfInterCollisions = sum(lengthOfInterCollisions)/float(len(lengthOfInterCollisions))
+        
 
         startingCollision = rle[firstInterCollision[3]-1]
         if lastInterCollision[3] + 1 == len(rle):
@@ -122,19 +128,20 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
         else:
             endingCollision = rle[lastInterCollision[3]+1]
 
-        pdb.set_trace()
+
         collisionLength = endingCollision[2]+endingCollision[1] - startingCollision[2] + 1
         collisionStartFrame = startingCollision[2]
 
         collisionLengthsL.append(collisionLength)
         collision_len_time = collisionLength/float(configurations.fps)
 
-        createVideoFromImages(collisionStartFrame, collisionLength, source_directory, configurations.complex_video_dir, bufferTime=buffer_time)
+
+        #createVideoFromImages(collisionStartFrame, collisionLength, source_directory, configurations.complex_video_dir, bufferTime=buffer_time)
         if counter == 0:
             pipe_string = ">"
         else:
             pipe_string = ">>"
-        os.system("echo '%s,%s,%s' %s %s" % (collisionStartFrame, num_of_collisions, collision_len_time, pipe_string, annotations_file_path))
+        os.system("echo '%s,%s,%s,%s' %s %s" % (collisionStartFrame, num_of_collisions, collision_len_time, averageLengthOfInterCollisions, pipe_string, annotations_file_path))
         counter +=1
 
 def createSimpleCollisionVideos(rle):
@@ -248,7 +255,7 @@ if __name__ == "__main__":
     #createCollisionVideos(source_dir_pathS=source_dir_pathS, sink_dir_pathS=sink_dir_pathS, threshold_for_short=3)
 
     # This is to create the videos.
-    #collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:103], user_dir, buffer_time=2)
+    collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:103], user_dir, buffer_time=2)
 
 
 
