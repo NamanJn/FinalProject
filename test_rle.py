@@ -9,7 +9,7 @@ from os.path import join
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-
+import numpy as np
 def myencode(string):
     
     prev = string[0]
@@ -102,7 +102,7 @@ def getInterCollisionsFromDataFile(user_dir):
 
     # right now this function only gets in the area
     results_dir_path = join(configurations.output_dir, user_dir) # user_dir the folder beneath the 'output' dir.
-    data_file_path = join(results_dir, configurations.data_file)
+    data_file_path = join(results_dir_path, configurations.data_file)
     interCollisionsAreaL = []
     dF = pd.read_csv(data_file_path, names=configurations.col_names)
 
@@ -127,14 +127,14 @@ def getInterCollisionsFromDataFile(user_dir):
 
         if theWidth == configurations.collision_value:
             if tempo != []:
-                interCollisionsAreaL.append(tempo)
+                interCollisionsAreaL.append(np.array(tempo))
             tempo = []
         else:
-            tempo.append(theArea)
+            tempo.append(theRow)
 
         counter += 1
         print counter
-        if counter > 170: pdb.set_trace()
+        #if counter > 170: pdb.set_trace()
 
 
     return interCollisionsAreaL
@@ -216,7 +216,7 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
         endingCollision = rle[indexOfLastCollision]
 
 
-        # finding the average collision contour Size
+        # finding the average collision contour size
         pdb.set_trace()
         collisionContourSizesL = [collisionAreasL[j[3]] for j in rle[indexOfStartingCollision: indexOfLastCollision+1] if j[0] == "1"]
         flattenedCollisionContourSizesL = [k for j in collisionContourSizesL for k in j]
@@ -229,7 +229,7 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
         collisionLengthsL.append(collisionLength)
         collision_len_time = collisionLength/float(configurations.fps)
 
-        pdb.set_trace()
+
         #createVideoFromImages(collisionStartFrame, collisionLength, source_directory, configurations.complex_video_dir, bufferTime=buffer_time)
         if counter == 0:
             pipe_string = ">"
