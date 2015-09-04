@@ -74,12 +74,9 @@ def trainAnnotatedVideos(user_dir):
         print 'predicting now'
         predictedNP = clf.predict(testingFeatures.values)
 
-        print clf.score(testingFeatures.values, testingLabels.values)
-
+        accuracyI = clf.score(testingFeatures.values, testingLabels.values)
+    
         # testing accuracy
-        BooleanNP = predictedNP == testingLabels.values
-        frequenciesD = Counter(BooleanNP)
-        accuracyI = frequenciesD[True]/float(sum(frequenciesD.values()))
         accuraciesD[i] = accuracyI
         print "the accuracy of %s is %s\n" % (i, accuraciesD[i])
 
@@ -97,4 +94,4 @@ if __name__ == "__main__":
 
     user_dir = 'tube4'
     accuraciesD = trainAnnotatedVideos(user_dir)
-    createHistogramForClassifierResults('classifier.png', user_dir)
+    #createHistogramForClassifierResults('classifier.png', user_dir)
