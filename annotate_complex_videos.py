@@ -5,6 +5,7 @@ from os.path import join
 import pandas as pd
 from sklearn.svm import SVC
 import pdb
+from collections import Counter
 
 def annotateVideos():
 
@@ -36,22 +37,13 @@ if __name__ == "__main__":
 
     numOfVideosForTraining = 100
 
-    pdb.set_trace()
+    # training set
     trainingFeatures = featuresPD[0:numOfVideosForTraining]
     trainingLabels = labelsPD[0:numOfVideosForTraining]
 
+    # testing set
     testingFeatures = featuresPD[numOfVideosForTraining:]
     testingLabels = labelsPD[numOfVideosForTraining:]
-
-
-    for i in ["rbf", "linear", "poly"][:3]:
-        clf = SVC()
-        clf.kernel = i
-        print 'training now'
-        clf.fit(trainingFeatures.values, trainingLabels.values)
-
-        print 'predicting now'
-        print clf.predict(testingFeatures.values)
 
     # using 4 machine learning algorithms.
     # SVM - linear kernel
@@ -59,3 +51,26 @@ if __name__ == "__main__":
     # SVM -  polynomial kernel with degree 1
     # SVM - rbf kernel
     # logistic regression - linear polynomial
+
+    accuraciesD = {}
+    for i in ["rbf", "linear", "sigmoid", "poly"]:
+        clf = SVC()
+        clf.kernel = i
+        if i == "poly":
+            clf.degree = 1
+
+        print 'training now'
+        clf.fit(trainingFeatures.values, trainingLabels.values)
+
+        print 'predicting now'
+        predictedNP = clf.predict(testingFeatures.values)
+
+        # testing accuracy
+        BooleanNP = predictedNP == testingLabels.values
+        frequenciesD = Counter(BooleanNP)
+        accuracyI = frequenciesD[True]/float(sum(frequenciesD.values()))
+        accuraciesD[i] = accuracyI
+        print "the accuracy of %s is %s\n" % (i, accuraciesD[i])
+
+    print accuraciesD
+
