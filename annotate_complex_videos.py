@@ -6,6 +6,10 @@ import pandas as pd
 from sklearn.svm import SVC
 import pdb
 from collections import Counter
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+import test_rle
+import numpy as np
 
 def annotateVideos():
 
@@ -19,12 +23,7 @@ def annotateVideos():
     #complex_annotation.getRemainingVideosToValidate()
 
 def trainAnnotatedVideos(user_dir):
-    pass
 
-
-if __name__ == "__main__":
-
-    user_dir = 'tube4'
     results_dir_path = join(configurations.output_dir, user_dir)
     features_file_path = join(results_dir_path, configurations.features_file)
 
@@ -45,6 +44,7 @@ if __name__ == "__main__":
     testingFeatures = featuresPD[numOfVideosForTraining:]
     testingLabels = labelsPD[numOfVideosForTraining:]
 
+
     # using 4 machine learning algorithms.
     # SVM - linear kernel
     # SVM - polynomial kernel with degree 3
@@ -53,17 +53,28 @@ if __name__ == "__main__":
     # logistic regression - linear polynomial
 
     accuraciesD = {}
-    for i in ["rbf", "linear", "sigmoid", "poly"]:
-        clf = SVC()
-        clf.kernel = i
-        if i == "poly":
-            clf.degree = 1
+    for i in ["SVM-rbf", "SVM-linear", "SVM-sigmoid", "SVM-poly", "logistic", "k-NN"]:
+
+        if i == "logistic":
+            clf = LogisticRegression()
+
+        elif i == "k-NN":
+            clf = KNeighborsClassifier()
+
+        elif i[:3] == "SVM":
+            clf = SVC()
+            kernelType = i.split("-")[-1]
+            clf.kernel = kernelType
+            if kernelType == "poly":
+                clf.degree = 1
 
         print 'training now'
         clf.fit(trainingFeatures.values, trainingLabels.values)
 
         print 'predicting now'
         predictedNP = clf.predict(testingFeatures.values)
+
+        print clf.score(testingFeatures.values, testingLabels.values)
 
         # testing accuracy
         BooleanNP = predictedNP == testingLabels.values
@@ -73,4 +84,17 @@ if __name__ == "__main__":
         print "the accuracy of %s is %s\n" % (i, accuraciesD[i])
 
     print accuraciesD
+    return accuraciesD
 
+def createHistogramForClassifierResults():
+    accuraciesD = trainAnnotatedVideos('tube4')
+    dataL = np.array(accuraciesD.values())*100
+    xAxisLabelsL = accuraciesD.keys()
+    test_rle.createHistogram("classifier.png", dataL, xAxisTitleS='Algorithms', yAxisTitleS='Accuracy (%)',
+                             xAxisLabelsL=xAxisLabelsL, clockWiseAngleOfXLabels=90)
+
+if __name__ == "__main__":
+
+    user_dir = 'tube4'
+    accuraciesD = trainAnnotatedVideos(user_dir)
+    createHistogramForClassifierResults()
