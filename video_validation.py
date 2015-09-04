@@ -113,7 +113,6 @@ class InspectVideos(object):
         self.output_file_pathS = os.path.join(configurations.output_dir, output_results_dirS, validation_results_dir, output_fileS)
 
         print 'file to save answers is', self.output_file_pathS
-        pdb.set_trace()
         self.video_number = 0
 
         #for videoS in videosL[::-1]:

@@ -187,7 +187,7 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
 
     collisionLengthsL = []
 
-    collisionAreasL = getCollisionAreas('tube4_3thSep')
+    collisionAreasL = getCollisionAreas(user_dir)
 
     counter = 0
     for i in complex_collisionsL:
@@ -217,7 +217,7 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
 
 
         # finding the average collision contour size
-        pdb.set_trace()
+
         collisionContourSizesL = [collisionAreasL[j[3]] for j in rle[indexOfStartingCollision: indexOfLastCollision+1] if j[0] == "1"]
         flattenedCollisionContourSizesL = [k for j in collisionContourSizesL for k in j]
         totalCollisionContourSize = sum(flattenedCollisionContourSizesL)
@@ -230,7 +230,7 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
         collision_len_time = collisionLength/float(configurations.fps)
 
 
-        #createVideoFromImages(collisionStartFrame, collisionLength, source_directory, configurations.complex_video_dir, bufferTime=buffer_time)
+        createVideoFromImages(collisionStartFrame, collisionLength, source_directory, configurations.complex_video_dir, bufferTime=buffer_time)
         if counter == 0:
             pipe_string = ">"
         else:
@@ -358,7 +358,7 @@ if __name__ == "__main__":
     #createCollisionVideos(source_dir_pathS=source_dir_pathS, sink_dir_pathS=sink_dir_pathS, threshold_for_short=3)
 
     # This is to create the videos.
-    collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:103], user_dir, buffer_time=2)
+    collisionLengthsL = createComplexVideos(rle, twos, complex_collisionsL[:153], user_dir, buffer_time=2)
     #interCollisionsAreaL = getInterCollisionsFromDataFile(user_dir)
     #collisionsAreaL = getCollisionAreas(user_dir+"_3thSep")
 
