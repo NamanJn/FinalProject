@@ -182,7 +182,7 @@ def createComplexVideos(rle, twos, complex_collisionsL, user_dir, buffer_time):
 
     results_dir_path = join(configurations.output_dir, user_dir) # user_dir the folder beneath the 'output' dir.
     source_directory = join(results_dir_path, configurations.debug_images_dir)
-    annotations_file_path = join(results_dir_path, 'annotations.csv')
+    annotations_file_path = join(results_dir_path, configurations.features_file)
     data_file_path = join(results_dir_path, configurations.data_file)
 
     collisionLengthsL = []

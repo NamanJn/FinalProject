@@ -58,5 +58,10 @@ rle_data_file = os.path.join(data_dir, "csv.csv")
 
 data_file = os.path.join(data_dir, "data.csv")
 
+# features file
+features_file= "annotations.csv"
+# features file
+annotations_file = "type_annotated.csv"
+
 # This is to create the simple and complex collisions.
 interCollisionTime = 2 # This is in seconds
