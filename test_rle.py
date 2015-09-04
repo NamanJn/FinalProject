@@ -318,12 +318,14 @@ def createHistogramOfCollisionLengths(user_dir):
     createHistogram("collisionLengthDistribution.png", heightsForBarChart, "Collision length (seconds)",
                     "Frequency", xAxisLabelsL=xAxisLabelsL)
 
-def createHistogram(histogramNameS, dataL, xAxisTitleS, yAxisTitleS, xAxisLabelsL ):
+def createHistogram(histogramNameS, dataL, xAxisTitleS, yAxisTitleS, xAxisLabelsL, clockWiseAngleOfXLabels = 90 ):
 
     df = pd.DataFrame(dataL)
     ax = df.plot(kind="bar")
 
-    ax.set_xticklabels(xAxisLabelsL)
+
+    ax.set_xticklabels(xAxisLabelsL, rotation = clockWiseAngleOfXLabels)
+
     ax.legend_.remove()
     sns.plt.xlabel(xAxisTitleS)
     sns.plt.ylabel(yAxisTitleS)
