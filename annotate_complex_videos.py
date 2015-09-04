@@ -86,15 +86,15 @@ def trainAnnotatedVideos(user_dir):
     print accuraciesD
     return accuraciesD
 
-def createHistogramForClassifierResults():
-    accuraciesD = trainAnnotatedVideos('tube4')
+def createHistogramForClassifierResults(histogramFileNameS, user_dir):
+    accuraciesD = trainAnnotatedVideos(user_dir)
     dataL = np.array(accuraciesD.values())*100
     xAxisLabelsL = accuraciesD.keys()
-    test_rle.createHistogram("classifier.png", dataL, xAxisTitleS='Algorithms', yAxisTitleS='Accuracy (%)',
-                             xAxisLabelsL=xAxisLabelsL, clockWiseAngleOfXLabels=90)
+    test_rle.createHistogram(histogramFileNameS, dataL, xAxisTitleS='Algorithms', yAxisTitleS='Accuracy (%)',
+                             xAxisLabelsL=xAxisLabelsL, clockWiseAngleOfXLabels=45)
 
 if __name__ == "__main__":
 
     user_dir = 'tube4'
     accuraciesD = trainAnnotatedVideos(user_dir)
-    createHistogramForClassifierResults()
+    createHistogramForClassifierResults('classifier.png', user_dir)
