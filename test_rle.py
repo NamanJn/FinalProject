@@ -114,6 +114,7 @@ def getInterCollisionsFromDataFile(user_dir):
 
     # finding the width to check whether it occurs during a collision or no.
     widthIndex = configurations.col_names.index('width')
+    xIndex = configurations.col_names.index('positionx')
     areaIndex = configurations.col_names.index('area')
 
     for rowIndexI in range(num_of_rows):
@@ -124,8 +125,10 @@ def getInterCollisionsFromDataFile(user_dir):
         # theArea = theRow.area
         theWidth = theRow[widthIndex]
         theArea = theRow[areaIndex]
+        theX = theRow[xIndex]
 
-        if theWidth == configurations.collision_value:
+
+        if theWidth == configurations.collision_value and theX == configurations.collision_value:
             if tempo != []:
                 interCollisionsAreaL.append(np.array(tempo))
             tempo = []
