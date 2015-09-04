@@ -75,7 +75,7 @@ def trainAnnotatedVideos(user_dir):
         predictedNP = clf.predict(testingFeatures.values)
 
         accuracyI = clf.score(testingFeatures.values, testingLabels.values)
-    
+
         # testing accuracy
         accuraciesD[i] = accuracyI
         print "the accuracy of %s is %s\n" % (i, accuraciesD[i])

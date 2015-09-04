@@ -18,8 +18,9 @@ import configurations
 poing = inspect.getabsfile(inspect.currentframe())
 ee = execfile
 
-d = docopt.docopt(__doc__)
-results_directory = os.path.join(configurations.output_dir, d['<results_directory>'])
+# d = docopt.docopt(__doc__)
+# results_directory = os.path.join(configurations.output_dir, d['<results_directory>'])
+results_directory = os.path.join(configurations.output_dir, 'tube4')
 print "This is the results directory", results_directory
 dataFilePathS = os.path.join(results_directory, data_file)
 
@@ -46,15 +47,24 @@ featuresPerFlyPerInterCollision = []
 for i in nonCollisionsL:
     fly1 = i[i[:, 1] == "fly1"]
     fly2 = i[i[:, 1] == "fly2"]
-    fly1Average = np.average(fly1[:, 4:], axis=0)
-    fly2Average = np.average(fly2[:, 4:], axis=0)
+    fly1Average = np.average(fly1[:, 4:], axis=0).astype("float64")
+    fly2Average = np.average(fly2[:, 4:], axis=0).astype("float64")
+
+    isnan1 = np.isnan(fly1Average)
+    isnan2 = np.isnan(fly2Average)
+    if isnan1.any() or isnan2.any(): pdb.set_trace()
     featuresPerFlyPerInterCollision.append([fly1Average, fly2Average])
 
 
-sys.exit()
+# clustering on features per fly per frame
 feature_set = nonCollisions.iloc[:, 4:]
 
 km = KMeans(n_clusters=2)
 labels = km.fit(feature_set).labels_
 
+# clustering on features per fly per set of IC frames
+flattenedFeaturesPerFlyPerInterCollision = np.array([j for i in featuresPerFlyPerInterCollision for j in i])
+
+km = KMeans(n_clusters=2)
+labels = km.fit(flattenedFeaturesPerFlyPerInterCollision).labels_
 
