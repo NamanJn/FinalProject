@@ -2,7 +2,7 @@
 
 """
 Usage:
-        validate2.py <results_directory> <username>
+        video_validation.py <results_directory> <username>
 
 """
 
