@@ -65,9 +65,7 @@ class Tracker(object):
 
                 imageToWrite = self.stitchImages(framesL)
                 if not self.writing:
-                    #self.fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
-                    print imageToWrite.shape
                     fourcc = cv2.cv.CV_FOURCC(*'mp4v')
                     pdb.set_trace()
                     self.out = cv2.VideoWriter(self.contourVideoName, fourcc, self.fps, (imageToWrite.shape[1], imageToWrite.shape[0]))
@@ -92,7 +90,9 @@ class Tracker(object):
 
     def apply(self, frame):
         """
-        returns moments (center) of contours
+
+        :param frame: The current frame from the video.
+        :return: The Cartesian coordinates of the flies.
         """
         self.counter += 1
         if self.counter % 500 == 0: print self.counter
@@ -106,15 +106,6 @@ class Tracker(object):
         cv2.cvtColor(frame, code=cv2.COLOR_BGR2GRAY, dst=self.gray)
         gray_float = self.gray.astype("float32")
 
-        # drawing the binary threshold image without running average
-        # cv2.threshold(src=self.gray,
-        #         thresh=80,
-        #         maxval=255,
-        #         type=cv2.THRESH_BINARY_INV,
-        #         dst=self.binary_without_running_average)
-
-        # getting the acumulator average
-
         self.alpha -= 0.001
         if self.alpha < 0:
             self.alpha = 0.0
@@ -124,9 +115,8 @@ class Tracker(object):
         cv2.accumulateWeighted(src=gray_float, dst=self.accumulator, alpha=self.alpha)
         accumulator_int = self.accumulator.astype("uint8")
 
-        #getting the diffs
+        # getting the diffs
         cv2.subtract(src1=accumulator_int, src2=self.gray, dst=self.diff)
-
 
 
         # drawing the binary threshold image with running average
@@ -137,17 +127,13 @@ class Tracker(object):
         contour = self.binary.copy()
 
 
-
         # finding the contours 
         contourL, hierarchy = cv2.findContours(image=contour,
                     #mode=cv2.RETR_TREE,
                     mode=cv2.RETR_EXTERNAL,
                     method=cv2.CHAIN_APPROX_SIMPLE)
 
-        #print "Length of all contours ",len(contourL)
-
-
-        # drawing all contours 
+        # drawing all contours
         allContourFrame = self.frame.copy()
         cv2.drawContours(allContourFrame,contourL,-1,(255,255,0),-1)
 
@@ -157,44 +143,21 @@ class Tracker(object):
         contourAreas = []
         for contourItem in contourL:
             contourArea = cv2.contourArea(contourItem)
-            #print "contourArea is ,", contourArea
+
             if self.contourArea_lowerBound < contourArea < 700:
                 bigcontours.append(contourItem)
                 contourAreas.append(contourArea)
         bigContourFrame = frame.copy()
         cv2.drawContours(bigContourFrame, bigcontours,-1,(255,255,0),1)
-        # This block is to prevent the losing of the contour
-        # need to redo this
 
-        #if len(bigcontours) == 2:
-        #    self.previousContour = bigcontours[:]
-        #elif len(bigcontours) == 1 and self.previousContour != ["test"]:
-        #    bigcontours = self.previousContour[:]
 
         # drawing the big contours
 
 
         mean_valuesL, maskedL, fly_mean_and_contour_and_contourAreas = self.getOnlyFlyContourAndMean(bigcontours, contourAreas)
 
-        #nonBackgroundContourL
-
-
-        #print "mean_value,", mean_val
-
-        # getting most squarish looking contour
-        # no need for this step if there is only 1 contour.
-        # unccoment line below if you want to have the length of the big 
-        #if self.counter> 100 and len(bigcontours) > 1:
-        #if self.counter > 1000:
-
-        #    squarishcontourL = self.getSquarishContour(bigcontours,draw=False)
-
-        #    frame_with_square_contour= self.frame.copy()
-        #    cv2.drawContours(frame_with_square_contour, squarishcontourL,-1,(255,255,0),1)
-	    #cv2.imshow("2nd filter step - squarish", frame_with_square_contour)
 
         # getting the positions of the flies
-
         bigAndFlyContours = [ i[1] for i in fly_mean_and_contour_and_contourAreas]
         bigAndFlyContourAreas = [ i[2] for i in fly_mean_and_contour_and_contourAreas]
         bigAndFlyMean = [ i[0][0] for i in fly_mean_and_contour_and_contourAreas]
@@ -206,7 +169,7 @@ class Tracker(object):
         boundingRectFrame = bigAndOnlyFlyContourFrame.copy()
         widthsL = [50]
         if len(bigAndFlyContours) >= 2:
-            #print len(bigAndFlyContours)
+
             boundingRectFrame, widthsL = self.getWidthOfContours(bigAndFlyContours, bigAndOnlyFlyContourFrame)
 
         positions = self.getPositions(bigAndFlyContours)
@@ -231,8 +194,6 @@ class Tracker(object):
                     distances = [ sum((np.array(fly_coordinate) - np.array(i))**2) for i in positions ]
                     min_index = distances.index(min(distances))
                     positions_proper[fly_id] = positions_and_areas[min_index]
-                    #print "distances are ", distances
-                    #print min_index
                     distancesL.append(distances)
 
                     if min_index == firstIndex:
@@ -242,10 +203,9 @@ class Tracker(object):
                         other_min_distance_index = (min_distance_index + 1 ) % 2 + 1
                         positions_proper[other_min_distance_index] = positions_and_areas[other_index]
 
-                        #pdb.set_trace()
                     firstIndex = min_index
 
-            #print distances
+
             rawImg = frame.copy()
             for fly_id, fly_features in positions_proper.iteritems():
                 x_coordinate = fly_features[0]
@@ -256,7 +216,7 @@ class Tracker(object):
                             cv2.FONT_HERSHEY_SIMPLEX,
                             0.75,
                             (255,255,255))
-            #print "This is the positions_proper", positions_proper
+
             self.positionsD = positions_proper
             self.collisionLength = 0
 
@@ -272,7 +232,6 @@ class Tracker(object):
             self.collisionLength += 1
 
 
-        #print positions
         # Images to show.
         imagesForVideoL = [
                frame,
@@ -303,21 +262,26 @@ class Tracker(object):
         # writing debugging images
         self.writeImages(self.stitchImages(imagesForVideoL), self.debug_imgs_dir)
 
-        # test_masked = 300
-        #if self.counter > 200: pdb.set_trace()
 
-        # if len(bigcontours) >= 3:
-        #     pdb.set_trace()
-        #print '----------------------'
         return positions
 
     def writeRawImagesWithNumbers(self, image):
+        """
+        This function creates an image of the provided frame.
+        :param image: NumPy 3D array.
+        :return: None.
+        """
         cv2.imwrite(os.path.join(self.rawImgDir, "frame%s.png" % self.counter), image)
 
     def writeImages(self, image, directory):
         cv2.imwrite(os.path.join(directory, "frame%s.png" % self.counter), image)
 
     def getPositions(self, bigcontours):
+        """
+        This function calculates center of the contours.
+        :param bigcontours: List of contours.
+        :return: positions for each contour.
+        """
         positions = []
         for i in bigcontours:
             M = cv2.moments(i)
@@ -410,8 +374,12 @@ class Tracker(object):
         squarishcontourL = [contourL.pop(min_index)]
         return squarishcontourL 
 
-    def stitchImages(self,frameL):
+    def stitchImages(self, frameL):
+        """
 
+        :param frameL: List of frames ( List of NumPy arrays)
+        :return: One frame ( 1 NumPy array).
+        """
         if len(frameL[0].shape) == 2:
             stitched = cv2.cvtColor( frameL[0], code = cv2.COLOR_GRAY2BGR )
         elif len(frameL[0].shape) == 3:
