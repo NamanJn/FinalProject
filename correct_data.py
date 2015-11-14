@@ -39,48 +39,49 @@ class CorrectCollisions(object):
         return "No. of rows: %s" % len(self.data_file)
 
 def flipFrameIdentities(dataFrame):
+
     dataFrameCopy = dataFrame.copy()
     dataFrameCopy.iloc[0, 2:] = dataFrame.iloc[1, 2:]
     dataFrameCopy.iloc[1, 2:] = dataFrame.iloc[0, 2:]
     return dataFrameCopy
 
 
-dataFileS = "data_shortcoll.csv"
-dataFilePathS = os.path.join(data_dir, dataFileS)
+if __name__ == "__main__":
 
-rleFileS = "csv.csv"
-rleFilePathS = os.path.join(data_dir, rleFileS)
+    dataFileS = "data_shortcoll.csv"
+    dataFilePathS = os.path.join(data_dir, dataFileS)
 
-validatedFileS = "identity.csv"
-validatedFilePathS = os.path.join(validation_results_dir, validatedFileS)
+    rleFileS = "csv.csv"
+    rleFilePathS = os.path.join(data_dir, rleFileS)
 
-# reading the files
-rle = readAndCreateRle(rleFilePathS)
-raw_data = pd.read_csv(dataFilePathS, header=None)
-results = pd.read_csv(validatedFilePathS, header=None)
+    validatedFileS = "identity.csv"
+    validatedFilePathS = os.path.join(validation_results_dir, validatedFileS)
 
-getYes = results[results.icol(1) == "y"]
-raw_data_copy = raw_data.copy()
+    # reading the files
+    rle = readAndCreateRle(rleFilePathS)
+    raw_data = pd.read_csv(dataFilePathS, header=None)
+    results = pd.read_csv(validatedFilePathS, header=None)
 
-yesValuesL = getYes.values[:, 0]
+    getYes = results[results.icol(1) == "y"]
+    raw_data_copy = raw_data.copy()
 
-for i in range(0, len(yesValuesL), 2):
+    yesValuesL = getYes.values[:, 0]
 
-    startingBound = yesValuesL[i]
-    upperBound = yesValuesL[i+1]
-    print startingBound
-    print upperBound
+    for i in range(0, len(yesValuesL), 2):
 
-    for j in range(startingBound, upperBound):
+        startingBound = yesValuesL[i]
+        upperBound = yesValuesL[i+1]
+        print startingBound
+        print upperBound
 
-        matchingRow = raw_data_copy [raw_data_copy.icol(0) == j]
-        indexes = matchingRow.index
-        flipped = flipFrameIdentities(matchingRow)
-        raw_data_copy.iloc[indexes[0]:indexes[1]+1] = flipped
-        print indexes
+        for j in range(startingBound, upperBound):
+
+            matchingRow = raw_data_copy [raw_data_copy.icol(0) == j]
+            indexes = matchingRow.index
+            flipped = flipFrameIdentities(matchingRow)
+            raw_data_copy.iloc[indexes[0]:indexes[1]+1] = flipped
+            print indexes
 
 
-# raw_data_copy is the final answer
-
-# trying class
-a = CorrectCollisions(raw_data, results, rle)
+    # trying class
+    a = CorrectCollisions(raw_data, results, rle)
