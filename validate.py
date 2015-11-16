@@ -52,7 +52,7 @@ while True:
         breakloop = False
 
         cv2.waitKey(100)
-	ret, frame = cap.read()
+	    ret, frame = cap.read()
         
         if not ret:
             cv2.setMouseCallback('image',draw_circle,param=4)
@@ -67,7 +67,7 @@ while True:
             break
 
         cv2.imshow("image", frame)
-	counter +=1
+	    counter +=1
 	#print counter 
 
         #frameROI = frame[tube_y:tube_y+tube_height,tube_x:tube_x+tube_length]
